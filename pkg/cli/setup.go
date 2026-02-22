@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -24,7 +25,7 @@ func runAgentCmd(agent string, handlers map[string]agentFunc, configDir string, 
 	fn, ok := handlers[agent]
 	if !ok {
 		fmt.Fprintf(os.Stderr, "Error: unknown agent: %s\n", agent)
-		fmt.Fprintf(os.Stderr, "Supported agents: claude, cursor, windsurf, antigravity, codex, opencode, roocode\n")
+		fmt.Fprintf(os.Stderr, "Supported agents: claude, cursor, windsurf, antigravity, codex, opencode, roocode, copilot\n")
 		os.Exit(1)
 	}
 
@@ -61,6 +62,7 @@ var setupCmd = &cobra.Command{
 			"windsurf":    setupWindsurf,
 			"antigravity": setupAntigravity,
 			"codex":       setupCodex,
+			"copilot":     setupCopilot,
 			"opencode": func(_ string, project bool, fast bool) (map[string]string, error) {
 				return setupOpenCode(project, fast)
 			},
@@ -83,6 +85,7 @@ var uninstallCmd = &cobra.Command{
 			"windsurf":    uninstallWindsurf,
 			"antigravity": uninstallAntigravity,
 			"codex":       uninstallCodex,
+			"copilot":     uninstallCopilot,
 			"opencode":    func(_ string, project bool, _ bool) (map[string]string, error) { return uninstallOpenCode(project) },
 			"roo":         uninstallRooCode,
 			"roocode":     uninstallRooCode,
@@ -881,6 +884,91 @@ func uninstallRooCode(configDir string, project bool, _ bool) (map[string]string
 
 	if err := os.WriteFile(configPath, newData, 0644); err != nil {
 		return nil, fmt.Errorf("failed to write config: %w", err)
+	}
+
+	return map[string]string{
+		"message": "Removed Pantry from " + configPath,
+	}, nil
+}
+
+func getCopilotConfigPath() (string, error) {
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return "", err
+	}
+
+	switch runtime.GOOS {
+	case "darwin":
+		return filepath.Join(home, "Library", "Application Support", "Code", "User", "globalStorage", "github.copilot-chat", "mcp.json"), nil
+	case "windows":
+		appData := os.Getenv("APPDATA")
+		if appData == "" {
+			appData = filepath.Join(home, "AppData", "Roaming")
+		}
+		return filepath.Join(appData, "Code", "User", "globalStorage", "github.copilot-chat", "mcp.json"), nil
+	default:
+		// Linux
+		return filepath.Join(home, ".config", "Code", "User", "globalStorage", "github.copilot-chat", "mcp.json"), nil
+	}
+}
+
+func setupCopilot(_ string, project bool, fastContext bool) (map[string]string, error) {
+	if project {
+		return nil, errors.New("GitHub Copilot only supports global installation for MCP servers.\nPlease run without the --project flag")
+	}
+
+	configPath, err := getCopilotConfigPath()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get copilot config path: %w", err)
+	}
+
+	if err := os.MkdirAll(filepath.Dir(configPath), 0755); err != nil {
+		return nil, fmt.Errorf("failed to create copilot config directory: %w", err)
+	}
+
+	mcpEntry := map[string]any{
+		"command": "pantry",
+		"args":    []string{"mcp"},
+	}
+
+	if err := writeMCPJSON(configPath, mcpEntry, fastContext); err != nil {
+		return nil, fmt.Errorf("failed to write mcp.json: %w", err)
+	}
+
+	home, _ := os.UserHomeDir()
+	agentHome := filepath.Join(home, ".pantry")
+
+	installSkill(agentHome)
+	msg := "Installed Pantry MCP server in " + configPath + "\n"
+
+	if fastContext {
+		installFastContextSkill(agentHome)
+		msg += "Installed fast context MCP servers and skills.\n"
+	}
+
+	msg += "\n\033[33mIMPORTANT: VS Code Copilot does not automatically read global skill files.\033[0m\n"
+	msg += "Please add the instructions from \033[36m" + filepath.Join(agentHome, "skills") + "\033[0m\n"
+	msg += "directly into your VS Code Copilot extension settings (e.g. Chat Rules) to ensure proper agent behavior."
+
+	return map[string]string{"message": msg}, nil
+}
+
+func uninstallCopilot(_ string, project bool, _ bool) (map[string]string, error) {
+	if project {
+		return nil, errors.New("GitHub Copilot only supports global uninstallation.\nPlease run without the --project flag")
+	}
+
+	configPath, err := getCopilotConfigPath()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get copilot config path: %w", err)
+	}
+
+	if _, err := os.Stat(configPath); os.IsNotExist(err) {
+		return map[string]string{"message": "Pantry not found in Copilot config"}, nil
+	}
+
+	if err := removeServersFromMCPJSON(configPath, []string{"pantry", "ripgrep", "code-search"}); err != nil {
+		return nil, err
 	}
 
 	return map[string]string{
