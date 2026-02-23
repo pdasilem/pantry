@@ -4,7 +4,7 @@ Local note storage for coding agents. Your agent keeps notes on decisions, bugs,
 
 **License & Credits:**
 
-- This project is released under a Non-Commercial License. Anyone may freely copy, distribute, modify, and use this software for non-commercial purposes only. Commercial exploitation (including selling) is explicitly prohibited.
+- This project is released under the **GNU General Public License v3.0 (GPLv3)**. Anyone may freely copy, distribute, modify, and use this software, including for commercial purposes, provided that any modified versions or derivative works are also distributed openly under the same GPLv3 license.
 - Исходный код этого проекта был использован с <https://github.com/mobydeck/pantry>.
 
 ## Features
@@ -61,6 +61,8 @@ Run `uniam doctor` to verify everything is working.
 ### Tell your agent to use Uniam
 
 MCP registration makes the tools available, but your agent also needs instructions to actually use them. The `setup` command installs a skill file automatically for agents that support it (Claude Code, Cursor, Windsurf, Antigravity, Codex, Codex CLI, Copilot, Gemini CLI). For other agents — or if you prefer to use a project-level rules file — add the following to your `AGENTS.md`, `.rules`, `CLAUDE.md`, or equivalent:
+
+> **Note for VS Code Copilot users**: Copilot does not automatically read global skill files. You must manually copy the instructions from the installed `skills` folder (e.g., `~/.uniam/skills/uniam.md`) directly into your VS Code Copilot Chat Rules settings to ensure proper agent behavior.
 
 ```markdown
 ## Uniam — persistent notes
