@@ -19,7 +19,25 @@ Local note storage for coding agents. Your agent keeps notes on decisions, bugs,
 
 ## Install
 
-### Download a binary (recommended)
+### Automatic install (recommended)
+
+**macOS / Linux:**
+
+```bash
+curl -sSL https://github.com/pdasilem/uniam/releases/latest/download/install.sh | sh
+```
+
+The script detects your OS and architecture, downloads the right binary, and installs it to `/usr/local/bin` (will prompt for `sudo` if needed). If you decline sudo, it falls back to `~/.local/bin` and updates your shell profile automatically.
+
+**Windows (PowerShell):**
+
+```powershell
+irm https://github.com/pdasilem/uniam/releases/latest/download/install.ps1 | iex
+```
+
+Installs to `%LOCALAPPDATA%\Programs\uniam\` and adds it to your user `PATH` via `SETX`. **Restart your terminal** after installation for PATH changes to take effect.
+
+### Manual download
 
 1. Go to the [Releases](../../releases) page and download the binary for your platform:
 

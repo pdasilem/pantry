@@ -58,6 +58,11 @@ jobs:
           CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -o dist/uniam-linux-arm64 ./cmd/uniam
           CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o dist/uniam-windows-amd64.exe ./cmd/uniam
           
+      - name: Copy install scripts
+        run: |
+          cp install.sh dist/install.sh
+          cp install.ps1 dist/install.ps1
+
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
