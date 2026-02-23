@@ -125,9 +125,9 @@ func addFastContextServers(mcpServers map[string]any) {
 		"command": "npx",
 		"args":    []string{"-y", "mcp-ripgrep@latest"},
 	}
-	mcpServers["code-search"] = map[string]any{
+	mcpServers["llmtooling-code-search-mcp"] = map[string]any{
 		"command": "npx",
-		"args":    []string{"-y", "code-search-mcp@latest"},
+		"args":    []string{"code-search-mcp"},
 	}
 }
 
@@ -602,7 +602,7 @@ func uninstallClaudeCode(configDir string, project bool, _ bool) (map[string]str
 		}
 	}
 
-	if err := removeServersFromMCPJSON(configPath, []string{"uniam", "ripgrep", "code-search"}); err != nil {
+	if err := removeServersFromMCPJSON(configPath, []string{"uniam", "ripgrep", "llmtooling-code-search-mcp"}); err != nil {
 		return nil, err
 	}
 
@@ -625,7 +625,7 @@ func uninstallCursor(configDir string, project bool, _ bool) (map[string]string,
 		return map[string]string{"message": "Uniam not found in Cursor config"}, nil
 	}
 
-	if err := removeServersFromMCPJSON(configPath, []string{"uniam", "ripgrep", "code-search"}); err != nil {
+	if err := removeServersFromMCPJSON(configPath, []string{"uniam", "ripgrep", "llmtooling-code-search-mcp"}); err != nil {
 		return nil, err
 	}
 
@@ -675,7 +675,7 @@ func uninstallWindsurf(configDir string, project bool, _ bool) (map[string]strin
 			continue
 		}
 
-		if err := removeServersFromMCPJSON(configPath, []string{"uniam", "ripgrep", "code-search"}); err != nil {
+		if err := removeServersFromMCPJSON(configPath, []string{"uniam", "ripgrep", "llmtooling-code-search-mcp"}); err != nil {
 			return nil, err
 		}
 
@@ -714,7 +714,7 @@ func uninstallAntigravity(configDir string, project bool, _ bool) (map[string]st
 		return map[string]string{"message": "Uniam not found in Antigravity config"}, nil
 	}
 
-	if err := removeServersFromMCPJSON(configPath, []string{"uniam", "ripgrep", "code-search"}); err != nil {
+	if err := removeServersFromMCPJSON(configPath, []string{"uniam", "ripgrep", "llmtooling-code-search-mcp"}); err != nil {
 		return nil, err
 	}
 
@@ -772,7 +772,7 @@ func uninstallOpenCode(project bool) (map[string]string, error) {
 	if mcp, ok := config["mcp"].(map[string]any); ok {
 		delete(mcp, "uniam")
 		delete(mcp, "ripgrep")
-		delete(mcp, "code-search")
+		delete(mcp, "llmtooling-code-search-mcp")
 	}
 
 	newData, err := json.MarshalIndent(config, "", "  ")
@@ -971,7 +971,7 @@ func uninstallCopilot(_ string, project bool, _ bool) (map[string]string, error)
 		return map[string]string{"message": "Uniam not found in Copilot config"}, nil
 	}
 
-	if err := removeServersFromMCPJSON(configPath, []string{"uniam", "ripgrep", "code-search"}); err != nil {
+	if err := removeServersFromMCPJSON(configPath, []string{"uniam", "ripgrep", "llmtooling-code-search-mcp"}); err != nil {
 		return nil, err
 	}
 
@@ -1046,7 +1046,7 @@ func uninstallGeminiCli(_ string, project bool, _ bool) (map[string]string, erro
 		return map[string]string{"message": "Uniam not found in gemini-cli config"}, nil
 	}
 
-	if err := removeServersFromMCPJSON(configPath, []string{"uniam", "ripgrep", "code-search"}); err != nil {
+	if err := removeServersFromMCPJSON(configPath, []string{"uniam", "ripgrep", "llmtooling-code-search-mcp"}); err != nil {
 		return nil, err
 	}
 

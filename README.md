@@ -52,11 +52,24 @@ uniam init
 uniam setup claude-code   # or: cursor, windsurf, antigravity, codex, codex-cli, opencode, roocode, copilot, gemini-cli
 ```
 
-During setup (except for Windsurf), you will be prompted to install **fast context MCP servers** (`ripgrep` and `code-search`). Answering "yes" will also add these powerful context retrieval plugins to your agent's configuration.
+During setup (except for Windsurf), you will be prompted to install **fast context MCP servers** (`ripgrep` and `llmtooling-code-search-mcp`). Answering "yes" will also add these powerful context retrieval plugins to your agent's configuration.
 
 This writes the MCP server entry into your agent's config file. Restart the agent and uniam will be available as a tool.
 
+Run `uniam setup` again at any time to re-apply the config — it is **idempotent** and will not overwrite other entries in your agent's config.
+
 Run `uniam doctor` to verify everything is working.
+
+### Updating
+
+To update the binary, download the new release from the [Releases](../../releases) page and replace the old file in your PATH:
+
+```bash
+chmod +x uniam-linux-amd64
+mv uniam-linux-amd64 /usr/local/bin/uniam
+```
+
+No config changes are needed — the agent always runs whatever `uniam` binary is in PATH when it starts the MCP server. Restart the agent after replacing the binary.
 
 ### Tell your agent to use Uniam
 

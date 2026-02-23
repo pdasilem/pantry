@@ -13,7 +13,7 @@ import (
 
 var initCmd = &cobra.Command{
 	Use:   "init",
-	Short: "Initialize the uniam",
+	Short: "Initialize uniam (run once on first install)",
 	//nolint:revive
 	Run: func(cmd *cobra.Command, args []string) {
 		home := config.GetUniamHome()

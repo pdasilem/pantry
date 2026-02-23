@@ -11,7 +11,7 @@ import (
 
 var mcpCmd = &cobra.Command{
 	Use:   "mcp",
-	Short: "Start the Uniam MCP server (stdio transport)",
+	Short: "Start the MCP server (used by agents — do not run manually)",
 	//nolint:revive
 	Run: func(cmd *cobra.Command, args []string) {
 		if err := mcp.RunServer(); err != nil {
