@@ -184,16 +184,16 @@ run "setup unknown agent fails" sh -c '! '"$UNIAM_BIN"' setup unknown-agent 2>/d
 # Use --config-dir to a temp path so we don't touch real config
 SETUP_DIR="$TEST_HOME/fake-agent-config"
 mkdir -p "$SETUP_DIR"
-run_contains "setup cursor with test config-dir" "Installed\|Uniam" $UNIAM_BIN setup cursor --config-dir "$SETUP_DIR"
+run_contains "setup cursor with test config-dir" "Installed\|Uniam" bash -c "yes no | $UNIAM_BIN setup cursor --config-dir \"$SETUP_DIR\""
 run "uninstall cursor with test config-dir" $UNIAM_BIN uninstall cursor --config-dir "$SETUP_DIR"
-run_contains "setup windsurf with test config-dir" "Installed\|Uniam" $UNIAM_BIN setup windsurf --config-dir "$SETUP_DIR"
+run_contains "setup windsurf with test config-dir" "Installed\|Uniam" bash -c "yes no | $UNIAM_BIN setup windsurf --config-dir \"$SETUP_DIR\""
 run "uninstall windsurf with test config-dir" $UNIAM_BIN uninstall windsurf --config-dir "$SETUP_DIR"
-run_contains "setup antigravity with test config-dir" "Installed\|Uniam" $UNIAM_BIN setup antigravity --config-dir "$SETUP_DIR"
+run_contains "setup antigravity with test config-dir" "Installed\|Uniam" bash -c "yes no | $UNIAM_BIN setup antigravity --config-dir \"$SETUP_DIR\""
 run "uninstall antigravity with test config-dir" $UNIAM_BIN uninstall antigravity --config-dir "$SETUP_DIR"
-run_contains "setup roocode with test config-dir" "Installed\|Uniam" $UNIAM_BIN setup roocode --config-dir "$SETUP_DIR"
+run_contains "setup roocode with test config-dir" "Installed\|Uniam" bash -c "yes no | $UNIAM_BIN setup roocode --config-dir \"$SETUP_DIR\""
 run_contains "setup roocode creates mcp.json" "mcp.json" ls "$SETUP_DIR"
 run "uninstall roocode with test config-dir" $UNIAM_BIN uninstall roocode --config-dir "$SETUP_DIR"
-run "setup roocode without --project fails" sh -c '! '"$UNIAM_BIN"' setup roocode 2>/dev/null'
+run "setup roocode without --project fails" sh -c '! yes no | '"$UNIAM_BIN"' setup roocode 2>/dev/null'
 
 # --- mcp (verify it starts) ---
 echo ""

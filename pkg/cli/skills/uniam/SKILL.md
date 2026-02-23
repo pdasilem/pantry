@@ -50,7 +50,7 @@ uniam store \
 
 Categories: `decision`, `bug`, `pattern`, `context`, `learning`.
 
-Set `--source` to your agent identifier: `claude-code`, `codex`, `cursor`, `opencode`, or `roocode`.
+Set `--source` to your agent identifier: `claude-code`, `codex`, `cursor`, `windsurf`, `antigravity`, or `opencode`.
 
 `--project` defaults to the current directory name — only set it explicitly if storing a note for a different project.
 
@@ -71,25 +71,6 @@ You MUST store a note when any of these happen:
 - Trivial changes (typo fixes, formatting)
 - Information that's already obvious from reading the code
 - Duplicate of an existing note (search first)
-
-## Agent setup (recommended)
-
-Run once to auto-install hooks for your agent:
-
-```bash
-uniam setup claude-code   # or: cursor, codex, opencode, roocode
-```
-
-To remove: `uniam uninstall claude-code`
-
-## Other commands
-
-```bash
-uniam config       # show current configuration
-uniam notes        # list daily note files (alias: log)
-uniam reindex      # rebuild search index
-uniam remove <id>  # remove a note
-```
 
 ## Rules
 

@@ -78,30 +78,7 @@ Run `uniam setup` again at any time to re-apply the config — it is **idempoten
 
 Run `uniam doctor` to verify everything is working.
 
-#### Security Note for `code-search-mcp`
-
-The `code-search` plugin provides powerful searching capabilities. By default, it searches all paths if allowed. It is highly recommended to configure it to restrict searches to specific working directories for security.
-
-You can modify your agent's MCP settings file to include `--allowed-workspace` or `-w` flags:
-
-```json
-{
-  "mcpServers": {
-    "code-search": {
-      "command": "node",
-      "args": [
-        "~/.local/share/uniam/code-search-mcp/dist/index.js",
-        "--allowed-workspace", "/home/your-user/your-project"
-      ]
-    }
-  }
-}
-```
-
-| Option | Description |
-|---|---|
-| `--allowed-workspace <path>` | Whitelist a directory for search operations. Can be specified multiple times. If omitted, all paths are allowed (use with caution). |
-| `-w <path>` | Short alias for `--allowed-workspace`. |
+> **Note**: If you want to configure your search parameters, set up custom search directories, or manage your GitHub PAT constraints, refer to the [Search Configuration Guide](docs/SEARCH.md).
 
 ### Updating
 
@@ -142,51 +119,7 @@ Do not skip either step. Notes are how context survives across sessions.
 
 ## Semantic search (optional)
 
-Keyword search (FTS5) works with no extra setup. To also enable semantic vector search, configure an embedding provider in `~/.uniam/config.yaml`:
-
-**Ollama (local, free):**
-
-```yaml
-embedding:
-  provider: ollama
-  model: nomic-embed-text
-  base_url: http://localhost:11434
-```
-
-Install [Ollama](https://ollama.com), then: `ollama pull nomic-embed-text`
-
-**OpenAI:**
-
-```yaml
-embedding:
-  provider: openai
-  model: text-embedding-3-small
-  api_key: sk-...
-```
-
-**OpenRouter:**
-
-```yaml
-embedding:
-  provider: openrouter
-  model: openai/text-embedding-3-small
-  api_key: sk-or-...
-```
-
-**Google (Gemini API):**
-
-```yaml
-embedding:
-  provider: google
-  model: gemini-embedding-001
-  api_key: AIzaSy...
-```
-
-After changing providers, rebuild the vector index:
-
-```bash
-uniam reindex
-```
+Keyword search (FTS5) works with no extra setup. To enable AI-powered semantic vector search using models like Ollama, OpenAI, or Gemini, please see the [Semantic Search Setup Guide](docs/SEARCH.md#semantic-search-optional).
 
 ## Environment variables
 
