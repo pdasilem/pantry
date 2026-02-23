@@ -1,6 +1,6 @@
 module uniam
 
-go 1.25
+go 1.24.0
 
 require (
 	github.com/asg017/sqlite-vec-go-bindings v0.1.6
