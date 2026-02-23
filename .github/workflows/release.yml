@@ -1,4 +1,4 @@
-name: Release
+name: Build and Release
 
 on:
   push:
@@ -9,7 +9,39 @@ permissions:
   contents: write
 
 jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache-dependency-path: |
+            go.sum
+            
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v3
+        with:
+          version: v1.64.4
+          working-directory: .
+
+      - name: Build
+        run: go build ./...
+
+      - name: Vet
+        run: go vet ./...
+
+      - name: Test
+        run: go test -race -timeout 120s ./...
+
+      - name: Vulnerability Scan
+        run: go run golang.org/x/vuln/cmd/govulncheck@latest ./...
+
+      - name: Test Integration
+        run: ./testing/test-uniam.sh
+
   release:
+    needs: lint-and-test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -36,13 +68,6 @@ jobs:
         with:
           files: dist/*
           name: Release ${{ github.ref_name }}
-          body: |
-            Initial stable release of Uniam.
-            Features:
-                MCP server for persisting project-level notes
-                Built-in Semantic Search
-                Support for Gemini, OpenAI, Anthropic, and Local embeddings
-                Agent hooks for: claude-code, cursor, windsurf, antigravity, codex, opencode, copilot, gemini
-                Installation of fast context MCP plugins (code-search, mcp-ripgrep)
+          generate_release_notes: true
           draft: false
           prerelease: false
