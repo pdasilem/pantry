@@ -70,13 +70,38 @@ uniam init
 uniam setup claude-code   # or: cursor, windsurf, antigravity, codex, codex-cli, opencode, roocode, copilot, gemini-cli
 ```
 
-During setup (except for Windsurf), you will be prompted to install **fast context MCP servers** (`ripgrep` and `llmtooling-code-search-mcp`). Answering "yes" will also add these powerful context retrieval plugins to your agent's configuration.
+During setup (except for Windsurf), you will be prompted to install **fast context MCP servers** (`ripgrep` and `code-search-mcp`). Answering "yes" will also add these powerful context retrieval plugins to your agent's configuration.
 
 This writes the MCP server entry into your agent's config file. Restart the agent and uniam will be available as a tool.
 
 Run `uniam setup` again at any time to re-apply the config — it is **idempotent** and will not overwrite other entries in your agent's config.
 
 Run `uniam doctor` to verify everything is working.
+
+#### Security Note for `code-search-mcp`
+
+The `code-search` plugin provides powerful searching capabilities. By default, it searches all paths if allowed. It is highly recommended to configure it to restrict searches to specific working directories for security.
+
+You can modify your agent's MCP settings file to include `--allowed-workspace` or `-w` flags:
+
+```json
+{
+  "mcpServers": {
+    "code-search": {
+      "command": "node",
+      "args": [
+        "~/.local/share/uniam/code-search-mcp/dist/index.js",
+        "--allowed-workspace", "/home/your-user/your-project"
+      ]
+    }
+  }
+}
+```
+
+| Option | Description |
+|---|---|
+| `--allowed-workspace <path>` | Whitelist a directory for search operations. Can be specified multiple times. If omitted, all paths are allowed (use with caution). |
+| `-w <path>` | Short alias for `--allowed-workspace`. |
 
 ### Updating
 

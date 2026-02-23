@@ -75,7 +75,26 @@ Run once to auto-install hooks for your agent:
 uniam setup cursor   # or: claude-code, windsurf, antigravity, codex, codex-cli, opencode, copilot, gemini-cli
 ```
 
-*Note: The setup command will prompt you to optionally install "fast context" MCP servers (`ripgrep` and `llmtooling-code-search-mcp`) for enhanced codebase indexing.*
+*Note: The setup command will prompt you to optionally install "fast context" MCP servers (`ripgrep` and `code-search-mcp`) for enhanced codebase indexing.*
+
+#### Security Note for `code-search-mcp`
+
+If you elected to install `code-search-mcp`, it is highly recommended to manually edit your agent's MCP configuration file afterwards to restrict its search boundaries (whitelist workspaces). By default, it runs unrestricted.
+
+```json
+{
+  "mcpServers": {
+    "code-search": {
+      "command": "node",
+      "args": [
+        "~/.local/share/uniam/code-search-mcp/dist/index.js",
+        "--allowed-workspace", "/path/to/your/project1",
+        "-w", "/path/to/your/project2"
+      ]
+    }
+  }
+}
+```
 
 To remove: `uniam uninstall cursor`
 
