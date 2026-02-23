@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"pantry/internal/core"
+	"uniam/internal/core"
 
 	"github.com/spf13/cobra"
 )
@@ -18,7 +18,7 @@ var (
 
 var searchCmd = &cobra.Command{
 	Use:   "search [query]",
-	Short: "Search pantry items",
+	Short: "Search uniam items",
 	Args:  cobra.ExactArgs(1),
 	//nolint:revive
 	Run: func(cmd *cobra.Command, args []string) {
@@ -90,7 +90,7 @@ var searchCmd = &cobra.Command{
 			}
 
 			if r.HasDetails {
-				fmt.Printf("     Details: available (use `pantry retrieve %s`)\n", r.ID)
+				fmt.Printf("     Details: available (use `uniam retrieve %s`)\n", r.ID)
 			}
 
 			fmt.Println()

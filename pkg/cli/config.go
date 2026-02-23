@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"pantry/internal/config"
+	"uniam/internal/config"
 
 	"github.com/spf13/cobra"
 	"go.yaml.in/yaml/v3"
@@ -18,7 +18,7 @@ var configCmd = &cobra.Command{
 	Short: "Show or manage configuration",
 	//nolint:revive
 	Run: func(cmd *cobra.Command, args []string) {
-		home := config.GetPantryHome()
+		home := config.GetUniamHome()
 		configPath := filepath.Join(home, "config.yaml")
 
 		cfg, err := config.LoadConfig(configPath)
@@ -40,7 +40,7 @@ var configCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		fmt.Printf("pantry_home: %s\n", home)
+		fmt.Printf("uniam_home: %s\n", home)
 		fmt.Println(string(data))
 	},
 }
@@ -50,7 +50,7 @@ var configInitCmd = &cobra.Command{
 	Short: "Generate a starter config.yaml",
 	//nolint:revive
 	Run: func(cmd *cobra.Command, args []string) {
-		home := config.GetPantryHome()
+		home := config.GetUniamHome()
 		configPath := filepath.Join(home, "config.yaml")
 
 		if _, err := os.Stat(configPath); err == nil && !configInitForce {

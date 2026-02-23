@@ -5,8 +5,8 @@ import (
 	"os"
 	"strings"
 
-	"pantry/internal/core"
-	"pantry/internal/models"
+	"uniam/internal/core"
+	"uniam/internal/models"
 
 	"github.com/spf13/cobra"
 )
@@ -26,7 +26,7 @@ var (
 
 var storeCmd = &cobra.Command{
 	Use:   "store",
-	Short: "Store a note in the pantry",
+	Short: "Store a note in the uniam",
 	//nolint:revive
 	Run: func(cmd *cobra.Command, args []string) {
 		if storeTitle == "" || storeWhat == "" {

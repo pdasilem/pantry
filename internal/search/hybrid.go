@@ -4,9 +4,9 @@ import (
 	"context"
 	"sort"
 
-	"pantry/internal/db"
-	"pantry/internal/embeddings"
-	"pantry/internal/models"
+	"uniam/internal/db"
+	"uniam/internal/embeddings"
+	"uniam/internal/models"
 )
 
 const (

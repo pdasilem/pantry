@@ -6,14 +6,14 @@ import (
 	"path/filepath"
 )
 
-//go:embed skills/pantry/SKILL.md
+//go:embed skills/uniam/SKILL.md
 var skillContent []byte
 
-// installSkill installs the Pantry SKILL.md into an agent's skills directory.
+// installSkill installs the Uniam SKILL.md into an agent's skills directory.
 // agentHome: path to the agent's config directory (e.g. ~/.claude, ~/.cursor, ~/.codex).
 // Returns true if skill was installed, false if already present.
 func installSkill(agentHome string) bool {
-	skillDir := filepath.Join(agentHome, "skills", "pantry")
+	skillDir := filepath.Join(agentHome, "skills", "uniam")
 	skillPath := filepath.Join(skillDir, "SKILL.md")
 
 	if _, err := os.Stat(skillPath); err == nil {
@@ -31,10 +31,10 @@ func installSkill(agentHome string) bool {
 	return true
 }
 
-// uninstallSkill removes the Pantry skill from an agent's skills directory.
+// uninstallSkill removes the Uniam skill from an agent's skills directory.
 // Returns true if skill was removed, false if not found.
 func uninstallSkill(agentHome string) bool {
-	skillDir := filepath.Join(agentHome, "skills", "pantry")
+	skillDir := filepath.Join(agentHome, "skills", "uniam")
 
 	info, err := os.Stat(skillDir)
 	if err != nil {

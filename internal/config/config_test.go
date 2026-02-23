@@ -5,19 +5,19 @@ import (
 	"testing"
 )
 
-func TestGetPantryHome(t *testing.T) {
+func TestGetUniamHome(t *testing.T) {
 	// Test default
-	home := GetPantryHome()
+	home := GetUniamHome()
 	if home == "" {
-		t.Error("GetPantryHome() should not return empty string")
+		t.Error("GetUniamHome() should not return empty string")
 	}
 
 	// Test with environment variable
-	t.Setenv("PANTRY_HOME", "/test/pantry")
+	t.Setenv("UNIAM_HOME", "/test/uniam")
 
-	home = GetPantryHome()
-	if home != "/test/pantry" {
-		t.Errorf("GetPantryHome() = %q, want %q", home, "/test/pantry")
+	home = GetUniamHome()
+	if home != "/test/uniam" {
+		t.Errorf("GetUniamHome() = %q, want %q", home, "/test/uniam")
 	}
 }
 

@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	"pantry/internal/config"
+	"uniam/internal/config"
 )
 
 // NewProvider creates a new embedding provider based on configuration.

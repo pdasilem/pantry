@@ -1,9 +1,9 @@
 ---
-name: pantry
+name: uniam
 description: Local-first note storage for coding agents. You MUST retrieve notes at session start and store notes before session end. This is not optional.
 ---
 
-# Pantry — Agent Notes
+# Uniam — Agent Notes
 
 You have persistent notes across sessions. USE THEM.
 
@@ -12,19 +12,19 @@ You have persistent notes across sessions. USE THEM.
 Before doing ANY work, retrieve notes from previous sessions:
 
 ```bash
-pantry list --project
+uniam list --project
 ```
 
 If the user's request relates to a specific topic, also search for it:
 
 ```bash
-pantry search "<relevant terms>" --project
+uniam search "<relevant terms>" --project
 ```
 
 When search results show "Details: available", retrieve them:
 
 ```bash
-pantry retrieve <note-id>
+uniam retrieve <note-id>
 ```
 
 Do not skip this step. Prior sessions may contain decisions, bugs, and context that directly affect your current task.
@@ -34,7 +34,7 @@ Do not skip this step. Prior sessions may contain decisions, bugs, and context t
 Before ending your response to ANY task that involved making changes, debugging, deciding, or learning something, you MUST store a note. This is not optional. If you did meaningful work, store it.
 
 ```bash
-pantry store \
+uniam store \
   --title "Short descriptive title" \
   --what "What happened or was decided" \
   --why "Reasoning behind it" \
@@ -77,18 +77,18 @@ You MUST store a note when any of these happen:
 Run once to auto-install hooks for your agent:
 
 ```bash
-pantry setup claude-code   # or: cursor, codex, opencode, roocode
+uniam setup claude-code   # or: cursor, codex, opencode, roocode
 ```
 
-To remove: `pantry uninstall claude-code`
+To remove: `uniam uninstall claude-code`
 
 ## Other commands
 
 ```bash
-pantry config       # show current configuration
-pantry notes        # list daily note files (alias: log)
-pantry reindex      # rebuild search index
-pantry remove <id>  # remove a note
+uniam config       # show current configuration
+uniam notes        # list daily note files (alias: log)
+uniam reindex      # rebuild search index
+uniam remove <id>  # remove a note
 ```
 
 ## Rules

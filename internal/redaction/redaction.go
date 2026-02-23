@@ -38,7 +38,7 @@ func init() {
 }
 
 // CompilePatterns compiles a slice of regex strings into []*regexp.Regexp.
-// Invalid patterns are skipped. Intended for pre-compiling custom .pantryignore
+// Invalid patterns are skipped. Intended for pre-compiling custom .uniamignore
 // patterns once at service startup.
 func CompilePatterns(patterns []string) []*regexp.Regexp {
 	compiled := make([]*regexp.Regexp, 0, len(patterns))
@@ -92,15 +92,15 @@ func RedactCompiled(text string, extra []*regexp.Regexp) string {
 	return text
 }
 
-// LoadPantryIgnore loads custom redaction patterns from a .pantryignore file.
-func LoadPantryIgnore(path string) ([]string, error) {
+// LoadUniamIgnore loads custom redaction patterns from a .uniamignore file.
+func LoadUniamIgnore(path string) ([]string, error) {
 	file, err := os.Open(path)
 	if err != nil {
 		if os.IsNotExist(err) {
 			return []string{}, nil
 		}
 
-		return nil, fmt.Errorf("failed to open .pantryignore: %w", err)
+		return nil, fmt.Errorf("failed to open .uniamignore: %w", err)
 	}
 
 	defer func() { _ = file.Close() }()
@@ -117,7 +117,7 @@ func LoadPantryIgnore(path string) ([]string, error) {
 	}
 
 	if err := scanner.Err(); err != nil {
-		return nil, fmt.Errorf("failed to read .pantryignore: %w", err)
+		return nil, fmt.Errorf("failed to read .uniamignore: %w", err)
 	}
 
 	return patterns, nil

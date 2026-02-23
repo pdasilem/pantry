@@ -29,15 +29,15 @@ type Config struct {
 	Context   ContextConfig   `yaml:"context"`
 }
 
-// GetPantryHome returns the pantry home directory.
-func GetPantryHome() string {
-	if home := os.Getenv("PANTRY_HOME"); home != "" {
+// GetUniamHome returns the uniam home directory.
+func GetUniamHome() string {
+	if home := os.Getenv("UNIAM_HOME"); home != "" {
 		return home
 	}
 
 	userHome, _ := os.UserHomeDir()
 
-	return filepath.Join(userHome, ".pantry")
+	return filepath.Join(userHome, ".uniam")
 }
 
 // LoadConfig loads configuration from a YAML file.
@@ -87,23 +87,23 @@ func LoadConfig(path string) (*Config, error) {
 	// Environment variable overrides (take precedence over file values).
 	// Useful for MCP servers launched by host applications that inject secrets
 	// via the environment rather than writing them to disk.
-	if v := os.Getenv("PANTRY_EMBEDDING_PROVIDER"); v != "" {
+	if v := os.Getenv("UNIAM_EMBEDDING_PROVIDER"); v != "" {
 		config.Embedding.Provider = v
 	}
 
-	if v := os.Getenv("PANTRY_EMBEDDING_MODEL"); v != "" {
+	if v := os.Getenv("UNIAM_EMBEDDING_MODEL"); v != "" {
 		config.Embedding.Model = v
 	}
 
-	if v := os.Getenv("PANTRY_EMBEDDING_API_KEY"); v != "" {
+	if v := os.Getenv("UNIAM_EMBEDDING_API_KEY"); v != "" {
 		config.Embedding.APIKey = &v
 	}
 
-	if v := os.Getenv("PANTRY_EMBEDDING_BASE_URL"); v != "" {
+	if v := os.Getenv("UNIAM_EMBEDDING_BASE_URL"); v != "" {
 		config.Embedding.BaseURL = &v
 	}
 
-	if v := os.Getenv("PANTRY_CONTEXT_SEMANTIC"); v != "" {
+	if v := os.Getenv("UNIAM_CONTEXT_SEMANTIC"); v != "" {
 		config.Context.Semantic = v
 	}
 
@@ -156,8 +156,8 @@ func SaveConfig(path string, config *Config) error {
 
 // GetDefaultConfigTemplate returns a default config template as a string.
 func GetDefaultConfigTemplate() string {
-	return `# Pantry configuration
-# Docs: https://github.com/your-org/pantry
+	return `# Uniam configuration
+# Docs: https://github.com/your-org/uniam
 
 # Embedding provider for semantic search.
 # Without this, keyword search (FTS5) still works.

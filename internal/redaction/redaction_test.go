@@ -57,14 +57,14 @@ func TestRedact(t *testing.T) {
 	}
 }
 
-func TestLoadPantryIgnore(t *testing.T) {
+func TestLoadUniamIgnore(t *testing.T) {
 	// Test with non-existent file
-	patterns, err := LoadPantryIgnore("/nonexistent/path/.pantryignore")
+	patterns, err := LoadUniamIgnore("/nonexistent/path/.uniamignore")
 	if err != nil {
-		t.Errorf("LoadPantryIgnore() error = %v, want nil", err)
+		t.Errorf("LoadUniamIgnore() error = %v, want nil", err)
 	}
 
 	if len(patterns) != 0 {
-		t.Errorf("LoadPantryIgnore() = %v, want empty slice", patterns)
+		t.Errorf("LoadUniamIgnore() = %v, want empty slice", patterns)
 	}
 }

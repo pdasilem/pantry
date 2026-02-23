@@ -1,7 +1,7 @@
 package db
 
 import (
-	"pantry/internal/models"
+	"uniam/internal/models"
 )
 
 // ItemModel represents the items table in the database.

@@ -51,7 +51,7 @@ func runAgentCmd(agent string, handlers map[string]agentFunc, configDir string, 
 
 var setupCmd = &cobra.Command{
 	Use:   "setup [agent]",
-	Short: "Install Pantry hooks for an agent",
+	Short: "Install Uniam hooks for an agent",
 	Args:  cobra.ExactArgs(1),
 	//nolint:revive
 	Run: func(cmd *cobra.Command, args []string) {
@@ -76,7 +76,7 @@ var setupCmd = &cobra.Command{
 
 var uninstallCmd = &cobra.Command{
 	Use:   "uninstall [agent]",
-	Short: "Remove Pantry hooks for an agent",
+	Short: "Remove Uniam hooks for an agent",
 	Args:  cobra.ExactArgs(1),
 	//nolint:revive
 	Run: func(cmd *cobra.Command, args []string) {
@@ -136,7 +136,7 @@ func setupClaudeCode(configDir string, project bool, fastContext bool) (map[stri
 
 	mcpEntry := map[string]any{
 		"type":    "stdio",
-		"command": "pantry",
+		"command": "uniam",
 		"args":    []string{"mcp"},
 		"env":     map[string]any{},
 	}
@@ -162,7 +162,7 @@ func setupClaudeCode(configDir string, project bool, fastContext bool) (map[stri
 		}
 	}
 
-	msg := "Installed Pantry MCP server in " + configPath
+	msg := "Installed Uniam MCP server in " + configPath
 	if installSkill(skillTarget) {
 		msg += " and skill" //nolint:goconst
 	}
@@ -190,7 +190,7 @@ func writeMCPJSON(configPath string, entry map[string]any, fastContext bool) err
 		config["mcpServers"] = mcpServers
 	}
 
-	mcpServers["pantry"] = entry
+	mcpServers["uniam"] = entry
 
 	if fastContext {
 		addFastContextServers(mcpServers)
@@ -225,7 +225,7 @@ func writeClaudeJSONUserMCP(configPath string, entry map[string]any, fastContext
 		root["mcpServers"] = mcpServers
 	}
 
-	mcpServers["pantry"] = entry
+	mcpServers["uniam"] = entry
 	if fastContext {
 		addFastContextServers(mcpServers)
 	}
@@ -263,8 +263,8 @@ func setupCursor(configDir string, project bool, fastContext bool) (map[string]s
 		config["mcpServers"] = mcpServers
 	}
 
-	mcpServers["pantry"] = map[string]any{
-		"command": "pantry",
+	mcpServers["uniam"] = map[string]any{
+		"command": "uniam",
 		"args":    []string{"mcp"},
 	}
 
@@ -286,7 +286,7 @@ func setupCursor(configDir string, project bool, fastContext bool) (map[string]s
 		return nil, fmt.Errorf("failed to write config: %w", err)
 	}
 
-	msg := "Installed Pantry MCP server in " + configPath
+	msg := "Installed Uniam MCP server in " + configPath
 	if installSkill(target) {
 		msg += " and skill"
 	}
@@ -345,8 +345,8 @@ func setupWindsurf(configDir string, project bool, fastContext bool) (map[string
 			config["mcpServers"] = mcpServers
 		}
 
-		mcpServers["pantry"] = map[string]any{
-			"command": "pantry",
+		mcpServers["uniam"] = map[string]any{
+			"command": "uniam",
 			"args":    []string{"mcp"},
 		}
 
@@ -364,7 +364,7 @@ func setupWindsurf(configDir string, project bool, fastContext bool) (map[string
 			return nil, fmt.Errorf("failed to write config for %s: %w", target, err)
 		}
 
-		msg := "Installed Pantry MCP server in " + configPath
+		msg := "Installed Uniam MCP server in " + configPath
 		if installSkill(target) {
 			msg += " and skill"
 		}
@@ -405,8 +405,8 @@ func setupAntigravity(configDir string, project bool, fastContext bool) (map[str
 		config["mcpServers"] = mcpServers
 	}
 
-	mcpServers["pantry"] = map[string]any{
-		"command": "pantry",
+	mcpServers["uniam"] = map[string]any{
+		"command": "uniam",
 		"args":    []string{"mcp"},
 	}
 
@@ -428,7 +428,7 @@ func setupAntigravity(configDir string, project bool, fastContext bool) (map[str
 		return nil, fmt.Errorf("failed to write config: %w", err)
 	}
 
-	msg := "Installed Pantry MCP server in " + configPath
+	msg := "Installed Uniam MCP server in " + configPath
 	if installSkill(target) {
 		msg += " and skill"
 	}
@@ -447,16 +447,16 @@ func setupCodex(configDir string, project bool, fastContext bool) (map[string]st
 
 	// Codex uses [mcp_servers.<name>] in config.toml.
 	// Only append the block if it's not already present (idempotent).
-	const pantryTOML = "\n[mcp_servers.pantry]\ncommand = \"pantry\"\nargs = [\"mcp\"]\n"
+	const uniamTOML = "\n[mcp_servers.uniam]\ncommand = \"uniam\"\nargs = [\"mcp\"]\n"
 
 	existing, _ := os.ReadFile(configPath)
-	if !bytes.Contains(existing, []byte("[mcp_servers.pantry]")) {
+	if !bytes.Contains(existing, []byte("[mcp_servers.uniam]")) {
 		f, err := os.OpenFile(configPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 		if err != nil {
 			return nil, fmt.Errorf("failed to open config file: %w", err)
 		}
 
-		_, writeErr := f.WriteString(pantryTOML)
+		_, writeErr := f.WriteString(uniamTOML)
 		closeErr := f.Close()
 
 		if writeErr != nil {
@@ -469,23 +469,23 @@ func setupCodex(configDir string, project bool, fastContext bool) (map[string]st
 	}
 
 	// Add to AGENTS.md (idempotent).
-	const pantryAgentsSection = "## Pantry\n\nYou have access to a persistent note storage system via Pantry. " +
+	const uniamAgentsSection = "## Uniam\n\nYou have access to a persistent note storage system via Uniam. " +
 		"Use it to store important decisions, patterns, bugs, context, and learnings.\n\n" +
 		"### Commands\n" +
-		"- `pantry store` - Store a note\n" +
-		"- `pantry search` - Search notes\n" +
-		"- `pantry list` - List recent notes\n"
+		"- `uniam store` - Store a note\n" +
+		"- `uniam search` - Search notes\n" +
+		"- `uniam list` - List recent notes\n"
 
 	existingAgents, _ := os.ReadFile(agentsPath)
-	if !bytes.Contains(existingAgents, []byte("## Pantry")) {
+	if !bytes.Contains(existingAgents, []byte("## Uniam")) {
 		f2, err := os.OpenFile(agentsPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 		if err == nil {
-			_, _ = f2.WriteString(pantryAgentsSection)
+			_, _ = f2.WriteString(uniamAgentsSection)
 			_ = f2.Close()
 		}
 	}
 
-	msg := "Installed Pantry in " + target
+	msg := "Installed Uniam in " + target
 	if installSkill(target) {
 		msg += " (MCP + AGENTS.md + skill)"
 	}
@@ -524,9 +524,9 @@ func setupOpenCode(project bool, fastContext bool) (map[string]string, error) {
 		config["mcp"] = mcp
 	}
 
-	mcp["pantry"] = map[string]any{
+	mcp["uniam"] = map[string]any{
 		"type":    "local",
-		"command": []string{"pantry", "mcp"},
+		"command": []string{"uniam", "mcp"},
 	}
 
 	// Write config
@@ -543,7 +543,7 @@ func setupOpenCode(project bool, fastContext bool) (map[string]string, error) {
 		return nil, fmt.Errorf("failed to write config: %w", err)
 	}
 
-	msg := "Installed Pantry MCP server in " + configPath
+	msg := "Installed Uniam MCP server in " + configPath
 	if fastContext {
 		msg += " with fast context"
 	}
@@ -591,22 +591,22 @@ func uninstallClaudeCode(configDir string, project bool, _ bool) (map[string]str
 
 		configPath = filepath.Join(cwd, ".mcp.json")
 		if _, err := os.Stat(configPath); os.IsNotExist(err) {
-			return map[string]string{"message": "Pantry not found in project .mcp.json"}, nil
+			return map[string]string{"message": "Uniam not found in project .mcp.json"}, nil
 		}
 	} else {
 		home, _ := os.UserHomeDir()
 
 		configPath = filepath.Join(home, ".claude.json")
 		if _, err := os.Stat(configPath); os.IsNotExist(err) {
-			return map[string]string{"message": "Pantry not found in Claude Code config"}, nil
+			return map[string]string{"message": "Uniam not found in Claude Code config"}, nil
 		}
 	}
 
-	if err := removeServersFromMCPJSON(configPath, []string{"pantry", "ripgrep", "code-search"}); err != nil {
+	if err := removeServersFromMCPJSON(configPath, []string{"uniam", "ripgrep", "code-search"}); err != nil {
 		return nil, err
 	}
 
-	msg := "Removed Pantry from " + configPath
+	msg := "Removed Uniam from " + configPath
 	if uninstallSkill(skillTarget) {
 		msg += " and skill"
 	}
@@ -622,14 +622,14 @@ func uninstallCursor(configDir string, project bool, _ bool) (map[string]string,
 	configPath := filepath.Join(target, "mcp.json")
 
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
-		return map[string]string{"message": "Pantry not found in Cursor config"}, nil
+		return map[string]string{"message": "Uniam not found in Cursor config"}, nil
 	}
 
-	if err := removeServersFromMCPJSON(configPath, []string{"pantry", "ripgrep", "code-search"}); err != nil {
+	if err := removeServersFromMCPJSON(configPath, []string{"uniam", "ripgrep", "code-search"}); err != nil {
 		return nil, err
 	}
 
-	msg := "Removed Pantry from " + configPath
+	msg := "Removed Uniam from " + configPath
 	if uninstallSkill(target) {
 		msg += " and skill"
 	}
@@ -675,11 +675,11 @@ func uninstallWindsurf(configDir string, project bool, _ bool) (map[string]strin
 			continue
 		}
 
-		if err := removeServersFromMCPJSON(configPath, []string{"pantry", "ripgrep", "code-search"}); err != nil {
+		if err := removeServersFromMCPJSON(configPath, []string{"uniam", "ripgrep", "code-search"}); err != nil {
 			return nil, err
 		}
 
-		msg := "Removed Pantry from " + configPath
+		msg := "Removed Uniam from " + configPath
 		if uninstallSkill(target) {
 			msg += " and skill"
 		}
@@ -690,7 +690,7 @@ func uninstallWindsurf(configDir string, project bool, _ bool) (map[string]strin
 	}
 
 	if len(removed) == 0 {
-		return map[string]string{"message": "Pantry not found in Windsurf configs"}, nil
+		return map[string]string{"message": "Uniam not found in Windsurf configs"}, nil
 	}
 
 	return map[string]string{"message": strings.Join(removed, "\n")}, nil
@@ -711,14 +711,14 @@ func uninstallAntigravity(configDir string, project bool, _ bool) (map[string]st
 	configPath := filepath.Join(target, "mcp_config.json")
 
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
-		return map[string]string{"message": "Pantry not found in Antigravity config"}, nil
+		return map[string]string{"message": "Uniam not found in Antigravity config"}, nil
 	}
 
-	if err := removeServersFromMCPJSON(configPath, []string{"pantry", "ripgrep", "code-search"}); err != nil {
+	if err := removeServersFromMCPJSON(configPath, []string{"uniam", "ripgrep", "code-search"}); err != nil {
 		return nil, err
 	}
 
-	msg := "Removed Pantry from " + configPath
+	msg := "Removed Uniam from " + configPath
 	if uninstallSkill(target) {
 		msg += " and skill"
 	}
@@ -732,7 +732,7 @@ func uninstallAntigravity(configDir string, project bool, _ bool) (map[string]st
 func uninstallCodex(configDir string, project bool, _ bool) (map[string]string, error) {
 	target := resolveConfigDir(".codex", configDir, project)
 
-	msg := "Codex uninstall: manually remove Pantry entries from .codex/config.toml and AGENTS.md"
+	msg := "Codex uninstall: manually remove Uniam entries from .codex/config.toml and AGENTS.md"
 
 	if uninstallSkill(target) {
 		msg += ". Removed skill."
@@ -756,7 +756,7 @@ func uninstallOpenCode(project bool) (map[string]string, error) {
 	}
 
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
-		return map[string]string{"message": "Pantry not found in OpenCode config"}, nil
+		return map[string]string{"message": "Uniam not found in OpenCode config"}, nil
 	}
 
 	data, err := os.ReadFile(configPath)
@@ -770,7 +770,7 @@ func uninstallOpenCode(project bool) (map[string]string, error) {
 	}
 
 	if mcp, ok := config["mcp"].(map[string]any); ok {
-		delete(mcp, "pantry")
+		delete(mcp, "uniam")
 		delete(mcp, "ripgrep")
 		delete(mcp, "code-search")
 	}
@@ -785,7 +785,7 @@ func uninstallOpenCode(project bool) (map[string]string, error) {
 	}
 
 	return map[string]string{
-		"message": "Removed Pantry from " + configPath,
+		"message": "Removed Uniam from " + configPath,
 	}, nil
 }
 
@@ -818,8 +818,8 @@ func setupRooCode(configDir string, project bool, fastContext bool) (map[string]
 		config["mcpServers"] = mcpServers
 	}
 
-	mcpServers["pantry"] = map[string]any{
-		"command": "pantry",
+	mcpServers["uniam"] = map[string]any{
+		"command": "uniam",
 		"args":    []string{"mcp"},
 	}
 
@@ -840,7 +840,7 @@ func setupRooCode(configDir string, project bool, fastContext bool) (map[string]
 		return nil, fmt.Errorf("failed to write config: %w", err)
 	}
 
-	msg := "Installed Pantry MCP server in " + configPath
+	msg := "Installed Uniam MCP server in " + configPath
 	if fastContext {
 		msg += " with fast context"
 	}
@@ -864,7 +864,7 @@ func uninstallRooCode(configDir string, project bool, _ bool) (map[string]string
 	configPath := filepath.Join(target, "mcp.json")
 
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
-		return map[string]string{"message": "Pantry not found in RooCode config"}, nil
+		return map[string]string{"message": "Uniam not found in RooCode config"}, nil
 	}
 
 	data, err := os.ReadFile(configPath)
@@ -878,7 +878,7 @@ func uninstallRooCode(configDir string, project bool, _ bool) (map[string]string
 	}
 
 	if mcpServers, ok := config["mcpServers"].(map[string]any); ok {
-		delete(mcpServers, "pantry")
+		delete(mcpServers, "uniam")
 	}
 
 	newData, err := json.MarshalIndent(config, "", "  ")
@@ -891,7 +891,7 @@ func uninstallRooCode(configDir string, project bool, _ bool) (map[string]string
 	}
 
 	return map[string]string{
-		"message": "Removed Pantry from " + configPath,
+		"message": "Removed Uniam from " + configPath,
 	}, nil
 }
 
@@ -931,7 +931,7 @@ func setupCopilot(_ string, project bool, fastContext bool) (map[string]string, 
 	}
 
 	mcpEntry := map[string]any{
-		"command": "pantry",
+		"command": "uniam",
 		"args":    []string{"mcp"},
 	}
 
@@ -940,10 +940,10 @@ func setupCopilot(_ string, project bool, fastContext bool) (map[string]string, 
 	}
 
 	home, _ := os.UserHomeDir()
-	agentHome := filepath.Join(home, ".pantry")
+	agentHome := filepath.Join(home, ".uniam")
 
 	installSkill(agentHome)
-	msg := "Installed Pantry MCP server in " + configPath + "\n"
+	msg := "Installed Uniam MCP server in " + configPath + "\n"
 
 	if fastContext {
 		installFastContextSkill(agentHome)
@@ -968,15 +968,15 @@ func uninstallCopilot(_ string, project bool, _ bool) (map[string]string, error)
 	}
 
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
-		return map[string]string{"message": "Pantry not found in Copilot config"}, nil
+		return map[string]string{"message": "Uniam not found in Copilot config"}, nil
 	}
 
-	if err := removeServersFromMCPJSON(configPath, []string{"pantry", "ripgrep", "code-search"}); err != nil {
+	if err := removeServersFromMCPJSON(configPath, []string{"uniam", "ripgrep", "code-search"}); err != nil {
 		return nil, err
 	}
 
 	return map[string]string{
-		"message": "Removed Pantry from " + configPath,
+		"message": "Removed Uniam from " + configPath,
 	}, nil
 }
 
@@ -1007,7 +1007,7 @@ func setupGeminiCli(_ string, project bool, fastContext bool) (map[string]string
 	}
 
 	mcpEntry := map[string]any{
-		"command": "pantry",
+		"command": "uniam",
 		"args":    []string{"mcp"},
 	}
 
@@ -1026,7 +1026,7 @@ func setupGeminiCli(_ string, project bool, fastContext bool) (map[string]string
 	}
 
 	installSkill(agentHome)
-	msg := "Installed Pantry MCP server in " + configPath + "\n"
+	msg := "Installed Uniam MCP server in " + configPath + "\n"
 
 	if fastContext {
 		installFastContextSkill(agentHome)
@@ -1043,10 +1043,10 @@ func uninstallGeminiCli(_ string, project bool, _ bool) (map[string]string, erro
 	}
 
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
-		return map[string]string{"message": "Pantry not found in gemini-cli config"}, nil
+		return map[string]string{"message": "Uniam not found in gemini-cli config"}, nil
 	}
 
-	if err := removeServersFromMCPJSON(configPath, []string{"pantry", "ripgrep", "code-search"}); err != nil {
+	if err := removeServersFromMCPJSON(configPath, []string{"uniam", "ripgrep", "code-search"}); err != nil {
 		return nil, err
 	}
 
@@ -1063,6 +1063,6 @@ func uninstallGeminiCli(_ string, project bool, _ bool) (map[string]string, erro
 	uninstallFastContextSkill(agentHome)
 
 	return map[string]string{
-		"message": "Removed Pantry from " + configPath,
+		"message": "Removed Uniam from " + configPath,
 	}, nil
 }

@@ -1,4 +1,4 @@
-module pantry
+module uniam
 
 go 1.25
 

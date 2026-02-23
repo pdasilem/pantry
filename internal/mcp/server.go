@@ -10,13 +10,13 @@ import (
 
 	mcpsdk "github.com/modelcontextprotocol/go-sdk/mcp"
 
-	"pantry/internal/core"
-	"pantry/internal/models"
+	"uniam/internal/core"
+	"uniam/internal/models"
 )
 
-// pantryService is the subset of core.Service used by MCP tool handlers.
+// uniamService is the subset of core.Service used by MCP tool handlers.
 // Defining it here allows tests to inject stubs without depending on core.Service.
-type pantryService interface {
+type uniamService interface {
 	Store(raw models.RawItemInput, project string) (map[string]any, error)
 	Search(query string, limit int, project *string, source *string, useVectors bool) ([]models.SearchResult, error)
 	GetContext(limit int, project *string, source *string, query *string, semanticMode string, topupRecent bool) ([]models.SearchResult, int64, error)
@@ -34,7 +34,7 @@ func RunServer() error {
 
 	// Create MCP server
 	mcpServer := mcpsdk.NewServer(&mcpsdk.Implementation{
-		Name:    "pantry",
+		Name:    "uniam",
 		Version: "0.1.0",
 	}, nil)
 
@@ -47,14 +47,14 @@ func RunServer() error {
 	return mcpServer.Run(context.Background(), &mcpsdk.StdioTransport{})
 }
 
-// registerTools registers all pantry tools with the MCP server.
+// registerTools registers all uniam tools with the MCP server.
 //
 //nolint:unparam
-func registerTools(s *mcpsdk.Server, svc pantryService) error {
-	// Register pantry_store tool
+func registerTools(s *mcpsdk.Server, svc uniamService) error {
+	// Register uniam_store tool
 	//nolint:revive
 	storeHandler := func(ctx context.Context, req *mcpsdk.CallToolRequest, input map[string]any) (*mcpsdk.CallToolResult, map[string]any, error) {
-		result, err := HandlePantryStore(svc, input)
+		result, err := HandleUniamStore(svc, input)
 		if err != nil {
 			return &mcpsdk.CallToolResult{
 				Content: []mcpsdk.Content{
@@ -67,7 +67,7 @@ func registerTools(s *mcpsdk.Server, svc pantryService) error {
 		return nil, result, nil
 	}
 	mcpsdk.AddTool(s, &mcpsdk.Tool{
-		Name:        "pantry_store",
+		Name:        "uniam_store",
 		Description: "Store a note for future sessions. You MUST call this before ending any session where you made changes, fixed bugs, made decisions, or learned something.",
 		InputSchema: map[string]any{
 			"type": "object",
@@ -87,10 +87,10 @@ func registerTools(s *mcpsdk.Server, svc pantryService) error {
 		},
 	}, storeHandler)
 
-	// Register pantry_search tool
+	// Register uniam_search tool
 	//nolint:revive
 	searchHandler := func(ctx context.Context, req *mcpsdk.CallToolRequest, input map[string]any) (*mcpsdk.CallToolResult, map[string]any, error) {
-		results, err := HandlePantrySearch(svc, input)
+		results, err := HandleUniamSearch(svc, input)
 		if err != nil {
 			return &mcpsdk.CallToolResult{
 				Content: []mcpsdk.Content{
@@ -103,7 +103,7 @@ func registerTools(s *mcpsdk.Server, svc pantryService) error {
 		return nil, map[string]any{"results": results}, nil
 	}
 	mcpsdk.AddTool(s, &mcpsdk.Tool{
-		Name:        "pantry_search",
+		Name:        "uniam_search",
 		Description: "Search notes using keyword and semantic search. Returns matching notes ranked by relevance.",
 		InputSchema: map[string]any{
 			"type": "object",
@@ -117,10 +117,10 @@ func registerTools(s *mcpsdk.Server, svc pantryService) error {
 		},
 	}, searchHandler)
 
-	// Register pantry_context tool
+	// Register uniam_context tool
 	//nolint:revive
 	contextHandler := func(ctx context.Context, req *mcpsdk.CallToolRequest, input map[string]any) (*mcpsdk.CallToolResult, map[string]any, error) {
-		result, err := HandlePantryContext(svc, input)
+		result, err := HandleUniamContext(svc, input)
 		if err != nil {
 			return &mcpsdk.CallToolResult{
 				Content: []mcpsdk.Content{
@@ -133,7 +133,7 @@ func registerTools(s *mcpsdk.Server, svc pantryService) error {
 		return nil, result, nil
 	}
 	mcpsdk.AddTool(s, &mcpsdk.Tool{
-		Name:        "pantry_context",
+		Name:        "uniam_context",
 		Description: "Get notes for the current project. Returns prior decisions, bugs, and context.",
 		InputSchema: map[string]any{
 			"type": "object",
@@ -148,8 +148,8 @@ func registerTools(s *mcpsdk.Server, svc pantryService) error {
 	return nil
 }
 
-// HandlePantryStore handles the pantry_store tool call.
-func HandlePantryStore(svc pantryService, params map[string]any) (map[string]any, error) {
+// HandleUniamStore handles the uniam_store tool call.
+func HandleUniamStore(svc uniamService, params map[string]any) (map[string]any, error) {
 	title, _ := params["title"].(string)
 	what, _ := params["what"].(string)
 	why, _ := getStringFromMap(params, "why")
@@ -201,8 +201,8 @@ func HandlePantryStore(svc pantryService, params map[string]any) (map[string]any
 	return result, nil
 }
 
-// HandlePantrySearch handles the pantry_search tool call.
-func HandlePantrySearch(svc pantryService, params map[string]any) ([]map[string]any, error) {
+// HandleUniamSearch handles the uniam_search tool call.
+func HandleUniamSearch(svc uniamService, params map[string]any) ([]map[string]any, error) {
 	query, _ := params["query"].(string)
 
 	limit := 5
@@ -241,8 +241,8 @@ func HandlePantrySearch(svc pantryService, params map[string]any) ([]map[string]
 	return clean, nil
 }
 
-// HandlePantryContext handles the pantry_context tool call.
-func HandlePantryContext(svc pantryService, params map[string]any) (map[string]any, error) {
+// HandleUniamContext handles the uniam_context tool call.
+func HandleUniamContext(svc uniamService, params map[string]any) (map[string]any, error) {
 	limit := 10
 	if l, ok := params["limit"].(float64); ok {
 		limit = int(l)

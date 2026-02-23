@@ -3,7 +3,7 @@ package db
 import (
 	"errors"
 
-	"pantry/internal/models"
+	"uniam/internal/models"
 )
 
 // ErrNotFound is returned when a requested item does not exist in the database.
@@ -11,10 +11,10 @@ var ErrNotFound = errors.New("item not found")
 
 // ErrDimensionMismatch is returned when the embedding dimension stored in the
 // database does not match the dimension returned by the current provider.
-// The caller should advise the user to run 'pantry reindex'.
+// The caller should advise the user to run 'uniam reindex'.
 var ErrDimensionMismatch = errors.New("embedding dimension mismatch")
 
-// Store is the persistence interface for pantry operations.
+// Store is the persistence interface for uniam operations.
 // *DB implements this interface; test code can inject a stub.
 type Store interface {
 	InsertItem(item models.Item, details *string) (int64, error)

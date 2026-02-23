@@ -1,6 +1,6 @@
 package main
 
-import "pantry/pkg/cli"
+import "uniam/pkg/cli"
 
 func main() {
 	cli.Execute()

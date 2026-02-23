@@ -7,7 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"pantry/internal/config"
+	"uniam/internal/config"
 )
 
 // --- OllamaProvider tests ---

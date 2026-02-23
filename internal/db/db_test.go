@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"pantry/internal/models"
+	"uniam/internal/models"
 )
 
 // newTestDB creates a fresh in-memory-backed DB in a temp directory.

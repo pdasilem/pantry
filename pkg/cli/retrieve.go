@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"pantry/internal/core"
+	"uniam/internal/core"
 
 	"github.com/spf13/cobra"
 )

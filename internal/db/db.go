@@ -19,8 +19,8 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 
-	"pantry/internal/gormlite"
-	"pantry/internal/models"
+	"uniam/internal/gormlite"
+	"uniam/internal/models"
 )
 
 func init() {
@@ -41,7 +41,7 @@ func init() {
 // Compile-time check that *DB satisfies the Store interface.
 var _ Store = (*DB)(nil)
 
-// DB wraps the database connection and provides methods for pantry operations.
+// DB wraps the database connection and provides methods for uniam operations.
 type DB struct {
 	db *gorm.DB
 }
@@ -102,7 +102,7 @@ func (d *DB) EnsureVecTable(dim int) error {
 
 		return d.createVecTable(dim)
 	} else if *storedDim != dim {
-		return fmt.Errorf("%w: database has %d, provider returned %d. Run 'pantry reindex' to rebuild", ErrDimensionMismatch, *storedDim, dim)
+		return fmt.Errorf("%w: database has %d, provider returned %d. Run 'uniam reindex' to rebuild", ErrDimensionMismatch, *storedDim, dim)
 	}
 
 	return nil

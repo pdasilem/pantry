@@ -1,16 +1,21 @@
-# Pantry
+# Uniam (Universal Agent Memory)
 
 Local note storage for coding agents. Your agent keeps notes on decisions, bugs, and context across sessions — no cloud, no API keys required, no cost.
+
+**License & Credits:**
+
+- This project is released under the MIT License. Anyone may freely copy, distribute, modify, and use this software for both commercial and non-commercial purposes.
+- Исходный код этого проекта был использован с <https://github.com/mobydeck/pantry>.
 
 ## Features
 
 - **Works with multiple agents** — Claude Code, Cursor, Windsurf, Antigravity, Codex, OpenCode, RooCode. One command sets up MCP config for your agent.
-- **MCP native** — Runs as an MCP server exposing `pantry_store`, `pantry_search`, and `pantry_context` as tools.
-- **Local-first** — Everything stays on your machine. Notes are stored as Markdown in `~/.pantry/shelves/`, readable in Obsidian or any editor.
+- **MCP native** — Runs as an MCP server exposing `uniam_store`, `uniam_search`, and `uniam_context` as tools.
+- **Local-first** — Everything stays on your machine. Notes are stored as Markdown in `~/.uniam/shelves/`, readable in Obsidian or any editor.
 - **Zero idle cost** — No background processes, no daemon, no RAM overhead. The MCP server only runs when the agent starts it.
 - **Hybrid search** — FTS5 keyword search works out of the box. Add Ollama, OpenAI, or OpenRouter for semantic vector search.
 - **Secret redaction** — 3-layer redaction strips API keys, passwords, and credentials before anything hits disk.
-- **Cross-agent** — Notes stored by one agent are searchable by all agents. One pantry, many agents.
+- **Cross-agent** — Notes stored by one agent are searchable by all agents. One uniam, many agents.
 
 ## Install
 
@@ -20,17 +25,17 @@ Local note storage for coding agents. Your agent keeps notes on decisions, bugs,
 
    | Platform | File |
    |----------|------|
-   | macOS (Apple Silicon) | `pantry-darwin-arm64` |
-   | macOS (Intel) | `pantry-darwin-amd64` |
-   | Linux x86-64 | `pantry-linux-amd64` |
-   | Linux ARM64 | `pantry-linux-arm64` |
-   | Windows x86-64 | `pantry-windows-amd64.exe` |
+   | macOS (Apple Silicon) | `uniam-darwin-arm64` |
+   | macOS (Intel) | `uniam-darwin-amd64` |
+   | Linux x86-64 | `uniam-linux-amd64` |
+   | Linux ARM64 | `uniam-linux-arm64` |
+   | Windows x86-64 | `uniam-windows-amd64.exe` |
 
 2. Make it executable and move it to your PATH (macOS/Linux):
 
    ```bash
-   chmod +x pantry-darwin-arm64
-   mv pantry-darwin-arm64 /usr/local/bin/pantry
+   chmod +x uniam-darwin-arm64
+   mv uniam-darwin-arm64 /usr/local/bin/uniam
    ```
 
 3. On macOS you may need to allow the binary in **System Settings → Privacy & Security** the first time you run it.
@@ -38,35 +43,35 @@ Local note storage for coding agents. Your agent keeps notes on decisions, bugs,
 ### Initialize
 
 ```bash
-pantry init
+uniam init
 ```
 
 ### Connect your agent
 
 ```bash
-pantry setup claude-code   # or: cursor, windsurf, antigravity, codex, codex-cli, opencode, roocode, copilot, gemini-cli
+uniam setup claude-code   # or: cursor, windsurf, antigravity, codex, codex-cli, opencode, roocode, copilot, gemini-cli
 ```
 
 During setup (except for Windsurf), you will be prompted to install **fast context MCP servers** (`ripgrep` and `code-search`). Answering "yes" will also add these powerful context retrieval plugins to your agent's configuration.
 
-This writes the MCP server entry into your agent's config file. Restart the agent and pantry will be available as a tool.
+This writes the MCP server entry into your agent's config file. Restart the agent and uniam will be available as a tool.
 
-Run `pantry doctor` to verify everything is working.
+Run `uniam doctor` to verify everything is working.
 
-### Tell your agent to use Pantry
+### Tell your agent to use Uniam
 
 MCP registration makes the tools available, but your agent also needs instructions to actually use them. The `setup` command installs a skill file automatically for agents that support it (Claude Code, Cursor, Windsurf, Antigravity, Codex, Codex CLI, Copilot, Gemini CLI). For other agents — or if you prefer to use a project-level rules file — add the following to your `AGENTS.md`, `.rules`, `CLAUDE.md`, or equivalent:
 
 ```markdown
-## Pantry — persistent notes
+## Uniam — persistent notes
 
-You have access to a persistent note storage system via the `pantry` MCP tools.
+You have access to a persistent note storage system via the `uniam` MCP tools.
 
 **Session start — MANDATORY**: Before doing any work, retrieve notes from previous sessions:
-- Call `pantry_context` to get recent notes for this project
-- If the request relates to a specific topic, also call `pantry_search` with relevant terms
+- Call `uniam_context` to get recent notes for this project
+- If the request relates to a specific topic, also call `uniam_search` with relevant terms
 
-**Session end — MANDATORY**: After any task that involved changes, decisions, bugs, or learnings, call `pantry_store` with:
+**Session end — MANDATORY**: After any task that involved changes, decisions, bugs, or learnings, call `uniam_store` with:
 - `title`: short descriptive title
 - `what`: what happened or was decided
 - `why`: reasoning behind it
@@ -79,7 +84,7 @@ Do not skip either step. Notes are how context survives across sessions.
 
 ## Semantic search (optional)
 
-Keyword search (FTS5) works with no extra setup. To also enable semantic vector search, configure an embedding provider in `~/.pantry/config.yaml`:
+Keyword search (FTS5) works with no extra setup. To also enable semantic vector search, configure an embedding provider in `~/.uniam/config.yaml`:
 
 **Ollama (local, free):**
 
@@ -122,38 +127,38 @@ embedding:
 After changing providers, rebuild the vector index:
 
 ```bash
-pantry reindex
+uniam reindex
 ```
 
 ## Environment variables
 
-All config file values can be overridden with environment variables. They take precedence over `~/.pantry/config.yaml` and are useful when the MCP host injects secrets into the environment instead of writing them to disk.
+All config file values can be overridden with environment variables. They take precedence over `~/.uniam/config.yaml` and are useful when the MCP host injects secrets into the environment instead of writing them to disk.
 
 | Variable | Description | Example |
 |----------|-------------|---------|
-| `PANTRY_HOME` | Override pantry home directory | `/data/pantry` |
-| `PANTRY_EMBEDDING_PROVIDER` | Embedding provider | `ollama`, `openai`, `openrouter`, `google` |
-| `PANTRY_EMBEDDING_MODEL` | Embedding model name | `text-embedding-3-small`, `gemini-embedding-001` |
-| `PANTRY_EMBEDDING_API_KEY` | API key for the embedding provider | `sk-...`, `AIzaSy...` |
-| `PANTRY_EMBEDDING_BASE_URL` | Base URL for the embedding API | `http://localhost:11434` |
-| `PANTRY_CONTEXT_SEMANTIC` | Semantic search mode | `auto`, `always`, `never` |
+| `UNIAM_HOME` | Override uniam home directory | `/data/uniam` |
+| `UNIAM_EMBEDDING_PROVIDER` | Embedding provider | `ollama`, `openai`, `openrouter`, `google` |
+| `UNIAM_EMBEDDING_MODEL` | Embedding model name | `text-embedding-3-small`, `gemini-embedding-001` |
+| `UNIAM_EMBEDDING_API_KEY` | API key for the embedding provider | `sk-...`, `AIzaSy...` |
+| `UNIAM_EMBEDDING_BASE_URL` | Base URL for the embedding API | `http://localhost:11434` |
+| `UNIAM_CONTEXT_SEMANTIC` | Semantic search mode | `auto`, `always`, `never` |
 
 ### Examples
 
 Use OpenAI embeddings without putting the key in the config file:
 
 ```bash
-PANTRY_EMBEDDING_PROVIDER=openai \
-PANTRY_EMBEDDING_MODEL=text-embedding-3-small \
-PANTRY_EMBEDDING_API_KEY=sk-... \
-pantry search "rate limiting"
+UNIAM_EMBEDDING_PROVIDER=openai \
+UNIAM_EMBEDDING_MODEL=text-embedding-3-small \
+UNIAM_EMBEDDING_API_KEY=sk-... \
+uniam search "rate limiting"
 ```
 
-Point a second pantry instance at a different directory (useful for testing or per-workspace isolation):
+Point a second uniam instance at a different directory (useful for testing or per-workspace isolation):
 
 ```bash
-PANTRY_HOME=/tmp/pantry-test pantry init
-PANTRY_HOME=/tmp/pantry-test pantry store -t "test note" -w "testing" -y "because"
+UNIAM_HOME=/tmp/uniam-test uniam init
+UNIAM_HOME=/tmp/uniam-test uniam store -t "test note" -w "testing" -y "because"
 ```
 
 Pass the API key through the MCP server config so it is injected at launch time rather than stored on disk. Example for Claude Code (`~/.claude/claude_desktop_config.json`):
@@ -161,13 +166,13 @@ Pass the API key through the MCP server config so it is injected at launch time 
 ```json
 {
   "mcpServers": {
-    "pantry": {
-      "command": "pantry",
+    "uniam": {
+      "command": "uniam",
       "args": ["mcp"],
       "env": {
-        "PANTRY_EMBEDDING_PROVIDER": "openai",
-        "PANTRY_EMBEDDING_MODEL": "text-embedding-3-small",
-        "PANTRY_EMBEDDING_API_KEY": "sk-..."
+        "UNIAM_EMBEDDING_PROVIDER": "openai",
+        "UNIAM_EMBEDDING_MODEL": "text-embedding-3-small",
+        "UNIAM_EMBEDDING_API_KEY": "sk-..."
       }
     }
   }
@@ -177,32 +182,32 @@ Pass the API key through the MCP server config so it is injected at launch time 
 Disable semantic search entirely for a single invocation (falls back to FTS5 keyword search):
 
 ```bash
-PANTRY_CONTEXT_SEMANTIC=never pantry search "connection pool"
+UNIAM_CONTEXT_SEMANTIC=never uniam search "connection pool"
 ```
 
 ## Commands
 
 ```
-pantry init                  Initialize pantry (~/.pantry)
-pantry doctor                Check health and capabilities
-pantry store                 Store a note
-pantry search <query>        Search notes
-pantry retrieve <id>         Show full note details
-pantry list                  List recent notes
-pantry remove <id>           Delete a note
-pantry notes                 List daily note files (alias: log)
-pantry config                Show current configuration
-pantry config init           Generate a starter config.yaml
-pantry setup <agent>         Configure MCP for an agent
-pantry uninstall <agent>     Remove agent MCP config
-pantry reindex               Rebuild vector search index
-pantry version               Print version
+uniam init                  Initialize uniam (~/.uniam)
+uniam doctor                Check health and capabilities
+uniam store                 Store a note
+uniam search <query>        Search notes
+uniam retrieve <id>         Show full note details
+uniam list                  List recent notes
+uniam remove <id>           Delete a note
+uniam notes                 List daily note files (alias: log)
+uniam config                Show current configuration
+uniam config init           Generate a starter config.yaml
+uniam setup <agent>         Configure MCP for an agent
+uniam uninstall <agent>     Remove agent MCP config
+uniam reindex               Rebuild vector search index
+uniam version               Print version
 ```
 
 ## Storing notes manually
 
 ```bash
-pantry store \
+uniam store \
   -t "Switched to JWT auth" \
   -w "Replaced session cookies with JWT" \
   -y "Needed stateless auth for API" \
@@ -213,7 +218,7 @@ pantry store \
 
 ## Flag reference
 
-`pantry store`:
+`uniam store`:
 
 | Flag | Short | Description |
 |------|-------|-------------|
@@ -227,7 +232,7 @@ pantry store \
 | `--source` | `-s` | Source agent identifier |
 | `--project` | `-p` | Project name (defaults to current directory) |
 
-`pantry list` / `pantry search` / `pantry notes`:
+`uniam list` / `uniam search` / `uniam notes`:
 
 | Flag | Short | Description |
 |------|-------|-------------|
@@ -240,7 +245,7 @@ pantry store \
 
 ### CGO-free, pure Go
 
-Pantry is built without CGO. SQLite runs as a WebAssembly module inside the process via [wazero](https://github.com/tetratelabs/wazero) — a zero-dependency, pure-Go WASM runtime. This means:
+Uniam is built without CGO. SQLite runs as a WebAssembly module inside the process via [wazero](https://github.com/tetratelabs/wazero) — a zero-dependency, pure-Go WASM runtime. This means:
 
 - **No C compiler needed** — `go build` just works, no `gcc`, `musl`, or `zig` required
 - **True static binaries** — the distributed binaries have no shared library dependencies (`ldd` shows nothing)
@@ -253,7 +258,7 @@ The tradeoff: first query of a session pays a one-time ~10 ms WASM compilation c
 
 Two SQLite extensions are compiled into the binary as embedded WASM blobs:
 
-**[sqlite-vec](https://github.com/asg017/sqlite-vec)** — vector similarity search. Pantry uses it to store note embeddings as 768- or 1536-dimensional `float32` vectors in a `vec0` virtual table, then retrieves the nearest neighbours with a single SQL query:
+**[sqlite-vec](https://github.com/asg017/sqlite-vec)** — vector similarity search. Uniam uses it to store note embeddings as 768- or 1536-dimensional `float32` vectors in a `vec0` virtual table, then retrieves the nearest neighbours with a single SQL query:
 
 ```sql
 SELECT note_id, distance
@@ -269,18 +274,18 @@ The extension is loaded at connection open time via `sqlite3_load_extension` equ
 
 ### Storage layout
 
-Notes live in `~/.pantry/`:
+Notes live in `~/.uniam/`:
 
 ```
-~/.pantry/
+~/.uniam/
   config.yaml          # embedding provider, model, API key
-  pantry.db            # SQLite database (WAL mode)
+  uniam.db            # SQLite database (WAL mode)
   shelves/
     project/
       YYYY-MM-DD.md    # daily Markdown files — human-readable, Obsidian-compatible
 ```
 
-The SQLite database holds structured note data and search indexes. The Markdown files in `shelves/` are append-only daily logs — they're the canonical human-readable view and survive even if the database is deleted (run `pantry reindex` to rebuild from them).
+The SQLite database holds structured note data and search indexes. The Markdown files in `shelves/` are append-only daily logs — they're the canonical human-readable view and survive even if the database is deleted (run `uniam reindex` to rebuild from them).
 
 ### GORM + vendored gormlite
 

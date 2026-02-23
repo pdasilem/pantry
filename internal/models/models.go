@@ -33,7 +33,7 @@ type RawItemInput struct {
 	Source       *string
 }
 
-// Item represents a stored item in the pantry.
+// Item represents a stored item in the uniam.
 type Item struct {
 	ID            string
 	Title         string

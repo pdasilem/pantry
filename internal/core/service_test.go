@@ -3,7 +3,7 @@ package core
 import (
 	"testing"
 
-	"pantry/internal/models"
+	"uniam/internal/models"
 )
 
 func TestNewService(t *testing.T) {
@@ -20,8 +20,8 @@ func TestNewService(t *testing.T) {
 		t.Fatal("NewService() returned nil")
 	}
 
-	if svc.pantryHome != tmpDir {
-		t.Errorf("NewService() pantryHome = %q, want %q", svc.pantryHome, tmpDir)
+	if svc.uniamHome != tmpDir {
+		t.Errorf("NewService() uniamHome = %q, want %q", svc.uniamHome, tmpDir)
 	}
 }
 

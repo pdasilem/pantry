@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"pantry/internal/models"
+	"uniam/internal/models"
 )
 
 // WriteNoteItem writes an item to a daily notes file.

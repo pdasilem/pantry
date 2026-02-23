@@ -6,16 +6,16 @@ import (
 	"os"
 	"path/filepath"
 
-	"pantry/internal/config"
-	"pantry/internal/core"
-	"pantry/internal/redaction"
+	"uniam/internal/config"
+	"uniam/internal/core"
+	"uniam/internal/redaction"
 
 	"github.com/spf13/cobra"
 )
 
 var doctorCmd = &cobra.Command{
 	Use:   "doctor",
-	Short: "Check pantry health and capabilities",
+	Short: "Check uniam health and capabilities",
 	//nolint:revive
 	Run: func(cmd *cobra.Command, args []string) {
 		ok := true
@@ -31,28 +31,28 @@ var doctorCmd = &cobra.Command{
 			fmt.Printf("  ! %-28s %s\n", label, detail)
 		}
 
-		home := config.GetPantryHome()
-		fmt.Printf("\nPantry home: %s\n\n", home)
+		home := config.GetUniamHome()
+		fmt.Printf("\nUniam home: %s\n\n", home)
 
 		// --- Filesystem ---
 		fmt.Println("Filesystem:")
 
 		if info, err := os.Stat(home); err != nil || !info.IsDir() {
-			fail("pantry home", "directory missing — run `pantry init`")
+			fail("uniam home", "directory missing — run `uniam init`")
 		} else {
-			pass("pantry home", home)
+			pass("uniam home", home)
 		}
 
 		dbPath := filepath.Join(home, "index.db")
 		if _, err := os.Stat(dbPath); err != nil {
-			fail("index.db", "missing — run `pantry init`")
+			fail("index.db", "missing — run `uniam init`")
 		} else {
 			pass("index.db", dbPath)
 		}
 
 		shelvesDir := filepath.Join(home, "shelves")
 		if _, err := os.Stat(shelvesDir); err != nil {
-			fail("shelves/", "missing — run `pantry init`")
+			fail("shelves/", "missing — run `uniam init`")
 		} else {
 			pass("shelves/", shelvesDir)
 		}
@@ -64,11 +64,11 @@ var doctorCmd = &cobra.Command{
 			pass("config.yaml", configPath)
 		}
 
-		ignorePath := filepath.Join(home, ".pantryignore")
+		ignorePath := filepath.Join(home, ".uniamignore")
 		if _, err := os.Stat(ignorePath); err != nil {
-			warn(".pantryignore", "not found (optional)")
+			warn(".uniamignore", "not found (optional)")
 		} else {
-			pass(".pantryignore", ignorePath)
+			pass(".uniamignore", ignorePath)
 		}
 
 		// --- Configuration ---
@@ -99,10 +99,10 @@ var doctorCmd = &cobra.Command{
 		fmt.Println("\nRedaction:")
 		pass("built-in patterns", fmt.Sprintf("%d patterns", len(redaction.SensitivePatterns)))
 
-		if patterns, err := redaction.LoadPantryIgnore(ignorePath); err != nil && !os.IsNotExist(err) {
-			fail(".pantryignore patterns", err.Error())
+		if patterns, err := redaction.LoadUniamIgnore(ignorePath); err != nil && !os.IsNotExist(err) {
+			fail(".uniamignore patterns", err.Error())
 		} else {
-			pass(".pantryignore patterns", fmt.Sprintf("%d custom patterns", len(patterns)))
+			pass(".uniamignore patterns", fmt.Sprintf("%d custom patterns", len(patterns)))
 		}
 
 		// --- Database & search ---
@@ -111,7 +111,7 @@ var doctorCmd = &cobra.Command{
 		svc, err := core.NewService(home)
 		if err != nil {
 			fail("database connection", err.Error())
-			fmt.Println("\nFix the issues above and re-run `pantry doctor`.")
+			fmt.Println("\nFix the issues above and re-run `uniam doctor`.")
 			os.Exit(1)
 		}
 
@@ -131,7 +131,7 @@ var doctorCmd = &cobra.Command{
 		if svc.VectorsAvailable() {
 			pass("vector search", "available (sqlite-vec loaded, table exists)")
 		} else {
-			warn("vector search", "not available — run `pantry reindex` after configuring embeddings")
+			warn("vector search", "not available — run `uniam reindex` after configuring embeddings")
 		}
 
 		// --- Embedding provider live test ---
@@ -143,7 +143,7 @@ var doctorCmd = &cobra.Command{
 		} else {
 			pass("initialize provider", "ok")
 
-			embedding, err := provider.Embed(context.Background(), "pantry doctor probe")
+			embedding, err := provider.Embed(context.Background(), "uniam doctor probe")
 			if err != nil {
 				fail("live probe", err.Error())
 				warn("", "check that your embedding service is running and reachable")

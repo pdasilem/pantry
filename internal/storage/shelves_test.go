@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"pantry/internal/models"
+	"uniam/internal/models"
 )
 
 func TestWriteNoteItem(t *testing.T) {

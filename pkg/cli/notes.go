@@ -7,7 +7,7 @@ import (
 	"sort"
 	"strings"
 
-	"pantry/internal/config"
+	"uniam/internal/config"
 
 	"github.com/spf13/cobra"
 )
@@ -23,7 +23,7 @@ var notesCmd = &cobra.Command{
 	Short:   "List daily note files",
 	//nolint:revive
 	Run: func(cmd *cobra.Command, args []string) {
-		home := config.GetPantryHome()
+		home := config.GetUniamHome()
 		shelvesDir := filepath.Join(home, "shelves")
 
 		type noteFile struct {

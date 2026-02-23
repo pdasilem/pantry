@@ -1,4 +1,4 @@
-# Pantry — Agent Notes
+# Uniam — Agent Notes
 
 You have persistent notes across sessions. USE THEM.
 
@@ -7,19 +7,19 @@ You have persistent notes across sessions. USE THEM.
 Before doing ANY work, retrieve notes from previous sessions:
 
 ```bash
-pantry list --project
+uniam list --project
 ```
 
 If the user's request relates to a specific topic, also search for it:
 
 ```bash
-pantry search "<relevant terms>" --project
+uniam search "<relevant terms>" --project
 ```
 
 When search results show "Details: available", retrieve them:
 
 ```bash
-pantry retrieve <note-id>
+uniam retrieve <note-id>
 ```
 
 Do not skip this step. Prior sessions may contain decisions, bugs, and context that directly affect your current task.
@@ -29,7 +29,7 @@ Do not skip this step. Prior sessions may contain decisions, bugs, and context t
 Before ending your response to ANY task that involved making changes, debugging, deciding, or learning something, you MUST store a note. This is not optional. If you did meaningful work, store it.
 
 ```bash
-pantry store \
+uniam store \
   --title "Short descriptive title" \
   --what "What happened or was decided" \
   --why "Reasoning behind it" \
@@ -72,17 +72,17 @@ You MUST store a note when any of these happen:
 Run once to auto-install hooks for your agent:
 
 ```bash
-pantry setup cursor   # or: claude-code, windsurf, antigravity, codex, codex-cli, opencode, copilot, gemini-cli
+uniam setup cursor   # or: claude-code, windsurf, antigravity, codex, codex-cli, opencode, copilot, gemini-cli
 ```
 
 *Note: The setup command will prompt you to optionally install "fast context" MCP servers (`ripgrep` and `code-search`) for enhanced codebase indexing.*
 
-To remove: `pantry uninstall cursor`
+To remove: `uniam uninstall cursor`
 
 ## Build & develop
 
 ```bash
-go build ./cmd/pantry
+go build ./cmd/uniam
 # or: just build
 ```
 
@@ -90,7 +90,7 @@ go build ./cmd/pantry
 
 ```bash
 go test ./...
-./testing/test-pantry.sh   # full CLI integration test (uses temp dir)
+./testing/test-uniam.sh   # full CLI integration test (uses temp dir)
 ```
 
 Unit tests: `internal/redaction`, `internal/models`, `internal/config`, `internal/storage`.

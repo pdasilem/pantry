@@ -4,10 +4,10 @@ import (
 	"errors"
 	"testing"
 
-	"pantry/internal/models"
+	"uniam/internal/models"
 )
 
-// --- Stub implementation of pantryService ---
+// --- Stub implementation of uniamService ---
 
 type stubService struct {
 	storeResult    map[string]any
@@ -36,9 +36,9 @@ func (s *stubService) GetContext(limit int, project *string, source *string, que
 
 func (s *stubService) Close() error { return nil }
 
-// --- HandlePantryStore tests ---
+// --- HandleUniamStore tests ---
 
-func TestHandlePantryStore_Success(t *testing.T) {
+func TestHandleUniamStore_Success(t *testing.T) {
 	svc := &stubService{
 		storeResult: map[string]any{
 			"id":        "abc-123",
@@ -52,9 +52,9 @@ func TestHandlePantryStore_Success(t *testing.T) {
 		"what":  "What happened",
 	}
 
-	result, err := HandlePantryStore(svc, params)
+	result, err := HandleUniamStore(svc, params)
 	if err != nil {
-		t.Fatalf("HandlePantryStore() error = %v", err)
+		t.Fatalf("HandleUniamStore() error = %v", err)
 	}
 
 	if result["id"] != "abc-123" {
@@ -66,7 +66,7 @@ func TestHandlePantryStore_Success(t *testing.T) {
 	}
 }
 
-func TestHandlePantryStore_PropagatesError(t *testing.T) {
+func TestHandleUniamStore_PropagatesError(t *testing.T) {
 	svc := &stubService{
 		storeErr: errors.New("storage failure"),
 	}
@@ -76,13 +76,13 @@ func TestHandlePantryStore_PropagatesError(t *testing.T) {
 		"what":  "W",
 	}
 
-	_, err := HandlePantryStore(svc, params)
+	_, err := HandleUniamStore(svc, params)
 	if err == nil {
-		t.Fatal("HandlePantryStore() should propagate service error")
+		t.Fatal("HandleUniamStore() should propagate service error")
 	}
 }
 
-func TestHandlePantryStore_TagsFromCommaString(t *testing.T) {
+func TestHandleUniamStore_TagsFromCommaString(t *testing.T) {
 	var capturedRaw models.RawItemInput
 
 	svc := &stubService{}
@@ -96,9 +96,9 @@ func TestHandlePantryStore_TagsFromCommaString(t *testing.T) {
 		"tags":  "golang,testing,refactor",
 	}
 
-	_, err := HandlePantryStore(captureSvc, params)
+	_, err := HandleUniamStore(captureSvc, params)
 	if err != nil {
-		t.Fatalf("HandlePantryStore() error = %v", err)
+		t.Fatalf("HandleUniamStore() error = %v", err)
 	}
 
 	capturedRaw = captureSvc.lastRaw
@@ -107,7 +107,7 @@ func TestHandlePantryStore_TagsFromCommaString(t *testing.T) {
 	}
 }
 
-func TestHandlePantryStore_TagsFromJSONArray(t *testing.T) {
+func TestHandleUniamStore_TagsFromJSONArray(t *testing.T) {
 	captureSvc := &capturingStub{}
 	params := map[string]any{
 		"title": "T",
@@ -115,9 +115,9 @@ func TestHandlePantryStore_TagsFromJSONArray(t *testing.T) {
 		"tags":  `["go","mcp"]`,
 	}
 
-	_, err := HandlePantryStore(captureSvc, params)
+	_, err := HandleUniamStore(captureSvc, params)
 	if err != nil {
-		t.Fatalf("HandlePantryStore() error = %v", err)
+		t.Fatalf("HandleUniamStore() error = %v", err)
 	}
 
 	if len(captureSvc.lastRaw.Tags) != 2 {
@@ -125,7 +125,7 @@ func TestHandlePantryStore_TagsFromJSONArray(t *testing.T) {
 	}
 }
 
-func TestHandlePantryStore_TagsFromNativeArray(t *testing.T) {
+func TestHandleUniamStore_TagsFromNativeArray(t *testing.T) {
 	captureSvc := &capturingStub{}
 	params := map[string]any{
 		"title": "T",
@@ -133,9 +133,9 @@ func TestHandlePantryStore_TagsFromNativeArray(t *testing.T) {
 		"tags":  []any{"alpha", "beta"},
 	}
 
-	_, err := HandlePantryStore(captureSvc, params)
+	_, err := HandleUniamStore(captureSvc, params)
 	if err != nil {
-		t.Fatalf("HandlePantryStore() error = %v", err)
+		t.Fatalf("HandleUniamStore() error = %v", err)
 	}
 
 	if len(captureSvc.lastRaw.Tags) != 2 {
@@ -163,18 +163,18 @@ func (c *capturingStub) GetContext(_ int, _ *string, _ *string, _ *string, _ str
 }
 func (c *capturingStub) Close() error { return nil }
 
-// --- HandlePantrySearch tests ---
+// --- HandleUniamSearch tests ---
 
-func TestHandlePantrySearch_NoResults(t *testing.T) {
+func TestHandleUniamSearch_NoResults(t *testing.T) {
 	svc := &stubService{searchResults: []models.SearchResult{}}
 
 	params := map[string]any{
 		"query": "something",
 	}
 
-	results, err := HandlePantrySearch(svc, params)
+	results, err := HandleUniamSearch(svc, params)
 	if err != nil {
-		t.Fatalf("HandlePantrySearch() error = %v", err)
+		t.Fatalf("HandleUniamSearch() error = %v", err)
 	}
 
 	if len(results) != 0 {
@@ -182,7 +182,7 @@ func TestHandlePantrySearch_NoResults(t *testing.T) {
 	}
 }
 
-func TestHandlePantrySearch_WithResults(t *testing.T) {
+func TestHandleUniamSearch_WithResults(t *testing.T) {
 	cat := "decision"
 	src := "claude"
 	svc := &stubService{
@@ -206,9 +206,9 @@ func TestHandlePantrySearch_WithResults(t *testing.T) {
 		"limit": float64(5),
 	}
 
-	results, err := HandlePantrySearch(svc, params)
+	results, err := HandleUniamSearch(svc, params)
 	if err != nil {
-		t.Fatalf("HandlePantrySearch() error = %v", err)
+		t.Fatalf("HandleUniamSearch() error = %v", err)
 	}
 
 	if len(results) != 1 {
@@ -228,26 +228,26 @@ func TestHandlePantrySearch_WithResults(t *testing.T) {
 	}
 }
 
-func TestHandlePantrySearch_PropagatesError(t *testing.T) {
+func TestHandleUniamSearch_PropagatesError(t *testing.T) {
 	svc := &stubService{searchErr: errors.New("search failed")}
 
-	_, err := HandlePantrySearch(svc, map[string]any{"query": "x"})
+	_, err := HandleUniamSearch(svc, map[string]any{"query": "x"})
 	if err == nil {
-		t.Fatal("HandlePantrySearch() should propagate service error")
+		t.Fatal("HandleUniamSearch() should propagate service error")
 	}
 }
 
-// --- HandlePantryContext tests ---
+// --- HandleUniamContext tests ---
 
-func TestHandlePantryContext_DefaultLimit(t *testing.T) {
+func TestHandleUniamContext_DefaultLimit(t *testing.T) {
 	svc := &stubService{
 		contextResults: []models.SearchResult{},
 		contextTotal:   42,
 	}
 
-	result, err := HandlePantryContext(svc, map[string]any{})
+	result, err := HandleUniamContext(svc, map[string]any{})
 	if err != nil {
-		t.Fatalf("HandlePantryContext() error = %v", err)
+		t.Fatalf("HandleUniamContext() error = %v", err)
 	}
 
 	if result["total"] != int64(42) {
@@ -259,7 +259,7 @@ func TestHandlePantryContext_DefaultLimit(t *testing.T) {
 	}
 }
 
-func TestHandlePantryContext_LimitParam(t *testing.T) {
+func TestHandleUniamContext_LimitParam(t *testing.T) {
 	called := false
 	capSvc := &contextCapturingStub{onContext: func(_ int) {
 		called = true
@@ -269,9 +269,9 @@ func TestHandlePantryContext_LimitParam(t *testing.T) {
 		"limit": float64(20),
 	}
 
-	_, err := HandlePantryContext(capSvc, params)
+	_, err := HandleUniamContext(capSvc, params)
 	if err != nil {
-		t.Fatalf("HandlePantryContext() error = %v", err)
+		t.Fatalf("HandleUniamContext() error = %v", err)
 	}
 
 	_ = called
@@ -281,12 +281,12 @@ func TestHandlePantryContext_LimitParam(t *testing.T) {
 	}
 }
 
-func TestHandlePantryContext_PropagatesError(t *testing.T) {
+func TestHandleUniamContext_PropagatesError(t *testing.T) {
 	svc := &stubService{contextErr: errors.New("context failed")}
 
-	_, err := HandlePantryContext(svc, map[string]any{})
+	_, err := HandleUniamContext(svc, map[string]any{})
 	if err == nil {
-		t.Fatal("HandlePantryContext() should propagate service error")
+		t.Fatal("HandleUniamContext() should propagate service error")
 	}
 }
 

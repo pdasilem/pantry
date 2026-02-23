@@ -1,19 +1,19 @@
-# Pantry Test Suite
+# Uniam Test Suite
 
-Integration tests for the pantry CLI. Exercises all subcommands with a temporary pantry.
+Integration tests for the uniam CLI. Exercises all subcommands with a temporary uniam.
 
 ## Run
 
 From project root:
 
 ```bash
-./testing/test-pantry.sh
+./testing/test-uniam.sh
 ```
 
 Or with a pre-built binary:
 
 ```bash
-PANTRY_BIN=./pantry ./testing/test-pantry.sh
+UNIAM_BIN=./uniam ./testing/test-uniam.sh
 ```
 
 ## What it tests
@@ -33,7 +33,7 @@ PANTRY_BIN=./pantry ./testing/test-pantry.sh
 
 ## Notes
 
-- Uses `PANTRY_HOME` in a temp dir; never touches `~/.pantry`
+- Uses `UNIAM_HOME` in a temp dir; never touches `~/.uniam`
 - Config overrides embedding to `http://127.0.0.1:19999` so tests run without Ollama (FTS-only path)
 - Vector search (sqlite-vec) is enabled via `github.com/asg017/sqlite-vec-go-bindings/ncruces`
 - Setup/uninstall use `--config-dir` to avoid modifying real agent configs

@@ -10,13 +10,13 @@ import (
 	"sync"
 	"time"
 
-	"pantry/internal/config"
-	"pantry/internal/db"
-	"pantry/internal/embeddings"
-	"pantry/internal/models"
-	"pantry/internal/redaction"
-	"pantry/internal/search"
-	"pantry/internal/storage"
+	"uniam/internal/config"
+	"uniam/internal/db"
+	"uniam/internal/embeddings"
+	"uniam/internal/models"
+	"uniam/internal/redaction"
+	"uniam/internal/search"
+	"uniam/internal/storage"
 )
 
 const (
@@ -33,16 +33,16 @@ func WithStore(s db.Store) Option {
 	return func(svc *Service) { svc.db = s }
 }
 
-// Service is the main orchestrator for pantry operations.
+// Service is the main orchestrator for uniam operations.
 type Service struct {
-	pantryHome     string
+	uniamHome     string
 	shelvesDir     string
 	dbPath         string
 	configPath     string
 	ignorePath     string
 	config         *config.Config
 	db             db.Store
-	compiledIgnore []*regexp.Regexp // pre-compiled from .pantryignore
+	compiledIgnore []*regexp.Regexp // pre-compiled from .uniamignore
 
 	// Lazy-initialized, protected by sync.Once for safety under concurrent access.
 	embeddingOnce     sync.Once
@@ -53,17 +53,17 @@ type Service struct {
 	vectorsAvailable bool
 }
 
-// NewService creates a new pantry service. Pass Option values to override
+// NewService creates a new uniam service. Pass Option values to override
 // defaults (e.g., WithStore for testing).
-func NewService(pantryHome string, opts ...Option) (*Service, error) {
-	if pantryHome == "" {
-		pantryHome = config.GetPantryHome()
+func NewService(uniamHome string, opts ...Option) (*Service, error) {
+	if uniamHome == "" {
+		uniamHome = config.GetUniamHome()
 	}
 
-	shelvesDir := filepath.Join(pantryHome, "shelves")
-	dbPath := filepath.Join(pantryHome, "index.db")
-	configPath := filepath.Join(pantryHome, "config.yaml")
-	ignorePath := filepath.Join(pantryHome, ".pantryignore")
+	shelvesDir := filepath.Join(uniamHome, "shelves")
+	dbPath := filepath.Join(uniamHome, "index.db")
+	configPath := filepath.Join(uniamHome, "config.yaml")
+	ignorePath := filepath.Join(uniamHome, ".uniamignore")
 
 	// Ensure shelves directory exists
 	if err := os.MkdirAll(shelvesDir, 0755); err != nil {
@@ -86,14 +86,14 @@ func NewService(pantryHome string, opts ...Option) (*Service, error) {
 		return nil, fmt.Errorf("failed to initialize database: %w", err)
 	}
 
-	// Load ignore patterns (.pantryignore missing is fine; other errors are surfaced)
-	ignorePatterns, ignoreErr := redaction.LoadPantryIgnore(ignorePath)
+	// Load ignore patterns (.uniamignore missing is fine; other errors are surfaced)
+	ignorePatterns, ignoreErr := redaction.LoadUniamIgnore(ignorePath)
 	if ignoreErr != nil && !os.IsNotExist(ignoreErr) {
-		fmt.Fprintf(os.Stderr, "warning: failed to load .pantryignore: %v\n", ignoreErr)
+		fmt.Fprintf(os.Stderr, "warning: failed to load .uniamignore: %v\n", ignoreErr)
 	}
 
 	svc := &Service{
-		pantryHome:     pantryHome,
+		uniamHome:     uniamHome,
 		shelvesDir:     shelvesDir,
 		dbPath:         dbPath,
 		configPath:     configPath,
@@ -135,7 +135,7 @@ func (s *Service) CountItems(project *string, source *string) (int64, error) {
 	return s.db.CountItems(project, source)
 }
 
-// Store stores an item in the pantry.
+// Store stores an item in the uniam.
 func (s *Service) Store(raw models.RawItemInput, project string) (map[string]any, error) {
 	if project == "" {
 		project = filepath.Base(getCurrentDir())
@@ -255,7 +255,7 @@ func (s *Service) GetDetails(itemID string) (*models.ItemDetail, error) {
 	return s.db.GetDetails(itemID)
 }
 
-// Remove removes an item from pantry.
+// Remove removes an item from uniam.
 func (s *Service) Remove(itemID string) (bool, error) {
 	return s.db.DeleteItem(itemID)
 }

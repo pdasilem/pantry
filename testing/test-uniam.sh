@@ -1,24 +1,24 @@
 #!/usr/bin/env bash
-# Comprehensive test script for pantry CLI subcommands.
-# Uses a temporary PANTRY_HOME for isolation. Run from project root.
+# Comprehensive test script for uniam CLI subcommands.
+# Uses a temporary UNIAM_HOME for isolation. Run from project root.
 
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-PANTRY_BIN="${PANTRY_BIN:-go run ./cmd/pantry}"
+UNIAM_BIN="${UNIAM_BIN:-go run ./cmd/uniam}"
 FAILED=0
 PASSED=0
 
-# Create temp dir for test pantry
-TEST_HOME=$(mktemp -d 2>/dev/null || mktemp -d -t pantry-test)
+# Create temp dir for test uniam
+TEST_HOME=$(mktemp -d 2>/dev/null || mktemp -d -t uniam-test)
 trap 'rm -rf "$TEST_HOME"' EXIT
 
-export PANTRY_HOME="$TEST_HOME"
+export UNIAM_HOME="$TEST_HOME"
 cd "$PROJECT_ROOT"
 
-echo "=== Pantry CLI Test Suite ==="
-echo "PANTRY_HOME=$TEST_HOME"
+echo "=== Uniam CLI Test Suite ==="
+echo "UNIAM_HOME=$TEST_HOME"
 echo ""
 
 run() {
@@ -72,7 +72,7 @@ run_not_contains() {
 
 # --- init ---
 echo "--- init ---"
-run "init creates pantry" $PANTRY_BIN init
+run "init creates uniam" $UNIAM_BIN init
 run_contains "init creates index.db" "index.db" ls "$TEST_HOME"
 run_contains "init creates config.yaml" "config.yaml" ls "$TEST_HOME"
 run_contains "init creates shelves dir" "shelves" ls "$TEST_HOME"
@@ -91,7 +91,7 @@ EOF
 # --- store ---
 echo ""
 echo "--- store ---"
-STORE_OUT=$($PANTRY_BIN store \
+STORE_OUT=$($UNIAM_BIN store \
   --title "JWT auth migration" \
   --what "Replaced session cookies with JWT tokens" \
   --why "Needed stateless auth for API" \
@@ -103,7 +103,7 @@ run_contains "store basic item" "Stored:" echo "$STORE_OUT"
 run_contains "store outputs id" "id:" echo "$STORE_OUT"
 ID1=$(echo "$STORE_OUT" | grep -oE 'id: [a-f0-9-]+' | head -1 | cut -d' ' -f2)
 
-STORE_OUT2=$($PANTRY_BIN store \
+STORE_OUT2=$($UNIAM_BIN store \
   --title "Database connection pooling" \
   --what "Configured pgBouncer for connection pooling" \
   --why "Reduce connection overhead" \
@@ -116,7 +116,7 @@ STORE_OUT2=$($PANTRY_BIN store \
 run_contains "store with details" "Stored:" echo "$STORE_OUT2"
 ID2=$(echo "$STORE_OUT2" | grep -oE 'id: [a-f0-9-]+' | head -1 | cut -d' ' -f2)
 
-STORE_OUT3=$($PANTRY_BIN store \
+STORE_OUT3=$($UNIAM_BIN store \
   --title "Null pointer in user service" \
   --what "Fixed NPE when user not found" \
   --why "Caused 500 errors" \
@@ -125,88 +125,88 @@ STORE_OUT3=$($PANTRY_BIN store \
   --project "test-project" 2>&1)
 run_contains "store with related-files" "Stored:" echo "$STORE_OUT3"
 
-run "store requires --title and --what" sh -c '! '"$PANTRY_BIN"' store 2>/dev/null'
+run "store requires --title and --what" sh -c '! '"$UNIAM_BIN"' store 2>/dev/null'
 
 # --- search ---
 echo ""
 echo "--- search ---"
-run_contains "search finds items" "Results" $PANTRY_BIN search "auth"
-run_contains "search returns JWT item" "JWT auth" $PANTRY_BIN search "auth"
-run_contains "search with limit" "Results" $PANTRY_BIN search "database" --limit 2
-run_contains "search finds pooling" "pooling" $PANTRY_BIN search "pooling"
+run_contains "search finds items" "Results" $UNIAM_BIN search "auth"
+run_contains "search returns JWT item" "JWT auth" $UNIAM_BIN search "auth"
+run_contains "search with limit" "Results" $UNIAM_BIN search "database" --limit 2
+run_contains "search finds pooling" "pooling" $UNIAM_BIN search "pooling"
 
 # --- list ---
 echo ""
 echo "--- list ---"
-run_contains "list shows items" "Notes" $PANTRY_BIN list
-run_contains "list shows stored items" "JWT auth" $PANTRY_BIN list
-run_contains "list with limit" "Notes" $PANTRY_BIN list --limit 5
+run_contains "list shows items" "Notes" $UNIAM_BIN list
+run_contains "list shows stored items" "JWT auth" $UNIAM_BIN list
+run_contains "list with limit" "Notes" $UNIAM_BIN list --limit 5
 
 # --- retrieve ---
 echo ""
 echo "--- retrieve ---"
-run_contains "retrieve by full id" "Pool size" $PANTRY_BIN retrieve "$ID2"
-run_contains "retrieve by short id" "Pool size" $PANTRY_BIN retrieve "${ID2:0:12}"
-run_contains "retrieve shows details" "transaction" $PANTRY_BIN retrieve "$ID2"
+run_contains "retrieve by full id" "Pool size" $UNIAM_BIN retrieve "$ID2"
+run_contains "retrieve by short id" "Pool size" $UNIAM_BIN retrieve "${ID2:0:12}"
+run_contains "retrieve shows details" "transaction" $UNIAM_BIN retrieve "$ID2"
 
 # --- remove ---
 echo ""
 echo "--- remove ---"
 # Create a temp item to remove
-REMOVE_OUT=$($PANTRY_BIN store --title "To be removed" --what "Temporary" --project "test-project" 2>&1)
+REMOVE_OUT=$($UNIAM_BIN store --title "To be removed" --what "Temporary" --project "test-project" 2>&1)
 REMOVE_ID=$(echo "$REMOVE_OUT" | grep -oE 'id: [a-f0-9-]+' | head -1 | cut -d' ' -f2)
-run_contains "remove deletes item" "Removed" $PANTRY_BIN remove "$REMOVE_ID"
-run_not_contains "removed item not in search" "To be removed" $PANTRY_BIN search "removed" 2>/dev/null || true
+run_contains "remove deletes item" "Removed" $UNIAM_BIN remove "$REMOVE_ID"
+run_not_contains "removed item not in search" "To be removed" $UNIAM_BIN search "removed" 2>/dev/null || true
 
 # --- notes ---
 echo ""
 echo "--- notes ---"
 # Note files are created when storing with project - we have test-project items
-run_contains "notes runs" "Notes" $PANTRY_BIN notes
-run_contains "notes with limit" "Notes" $PANTRY_BIN notes --limit 5
+run_contains "notes runs" "Notes" $UNIAM_BIN notes
+run_contains "notes with limit" "Notes" $UNIAM_BIN notes --limit 5
 
 # --- config ---
 echo ""
 echo "--- config ---"
-run_contains "config shows pantry_home" "pantry_home" $PANTRY_BIN config
-run_contains "config shows embedding" "embedding" $PANTRY_BIN config
-run_contains "config init --force" "Created\|already exists" $PANTRY_BIN config init --force 2>/dev/null || $PANTRY_BIN config init --force
+run_contains "config shows uniam_home" "uniam_home" $UNIAM_BIN config
+run_contains "config shows embedding" "embedding" $UNIAM_BIN config
+run_contains "config init --force" "Created\|already exists" $UNIAM_BIN config init --force 2>/dev/null || $UNIAM_BIN config init --force
 
 # --- reindex ---
 echo ""
 echo "--- reindex ---"
-run_contains "reindex runs" "Re-indexed\|Reindexing\|Reindex skipped" $PANTRY_BIN reindex
+run_contains "reindex runs" "Re-indexed\|Reindexing\|Reindex skipped" $UNIAM_BIN reindex
 
 # --- setup / uninstall (dry run - just verify they accept args) ---
 echo ""
 echo "--- setup / uninstall (validation) ---"
-run "setup unknown agent fails" sh -c '! '"$PANTRY_BIN"' setup unknown-agent 2>/dev/null'
+run "setup unknown agent fails" sh -c '! '"$UNIAM_BIN"' setup unknown-agent 2>/dev/null'
 # Use --config-dir to a temp path so we don't touch real config
 SETUP_DIR="$TEST_HOME/fake-agent-config"
 mkdir -p "$SETUP_DIR"
-run_contains "setup cursor with test config-dir" "Installed\|Pantry" $PANTRY_BIN setup cursor --config-dir "$SETUP_DIR"
-run "uninstall cursor with test config-dir" $PANTRY_BIN uninstall cursor --config-dir "$SETUP_DIR"
-run_contains "setup windsurf with test config-dir" "Installed\|Pantry" $PANTRY_BIN setup windsurf --config-dir "$SETUP_DIR"
-run "uninstall windsurf with test config-dir" $PANTRY_BIN uninstall windsurf --config-dir "$SETUP_DIR"
-run_contains "setup antigravity with test config-dir" "Installed\|Pantry" $PANTRY_BIN setup antigravity --config-dir "$SETUP_DIR"
-run "uninstall antigravity with test config-dir" $PANTRY_BIN uninstall antigravity --config-dir "$SETUP_DIR"
-run_contains "setup roocode with test config-dir" "Installed\|Pantry" $PANTRY_BIN setup roocode --config-dir "$SETUP_DIR"
+run_contains "setup cursor with test config-dir" "Installed\|Uniam" $UNIAM_BIN setup cursor --config-dir "$SETUP_DIR"
+run "uninstall cursor with test config-dir" $UNIAM_BIN uninstall cursor --config-dir "$SETUP_DIR"
+run_contains "setup windsurf with test config-dir" "Installed\|Uniam" $UNIAM_BIN setup windsurf --config-dir "$SETUP_DIR"
+run "uninstall windsurf with test config-dir" $UNIAM_BIN uninstall windsurf --config-dir "$SETUP_DIR"
+run_contains "setup antigravity with test config-dir" "Installed\|Uniam" $UNIAM_BIN setup antigravity --config-dir "$SETUP_DIR"
+run "uninstall antigravity with test config-dir" $UNIAM_BIN uninstall antigravity --config-dir "$SETUP_DIR"
+run_contains "setup roocode with test config-dir" "Installed\|Uniam" $UNIAM_BIN setup roocode --config-dir "$SETUP_DIR"
 run_contains "setup roocode creates mcp.json" "mcp.json" ls "$SETUP_DIR"
-run "uninstall roocode with test config-dir" $PANTRY_BIN uninstall roocode --config-dir "$SETUP_DIR"
-run "setup roocode without --project fails" sh -c '! '"$PANTRY_BIN"' setup roocode 2>/dev/null'
+run "uninstall roocode with test config-dir" $UNIAM_BIN uninstall roocode --config-dir "$SETUP_DIR"
+run "setup roocode without --project fails" sh -c '! '"$UNIAM_BIN"' setup roocode 2>/dev/null'
 
 # --- mcp (verify it starts) ---
 echo ""
 echo "--- mcp ---"
 # MCP runs on stdio - start in background, kill after 1s (macOS has no timeout)
-($PANTRY_BIN mcp & PID=$!; sleep 1; kill $PID 2>/dev/null || true) && run "mcp starts" true || run "mcp starts" true
+($UNIAM_BIN mcp & PID=$!; sleep 1; kill $PID 2>/dev/null || true) && run "mcp starts" true || run "mcp starts" true
 
 # --- help ---
 echo ""
 echo "--- help ---"
-run_contains "root help" "store" $PANTRY_BIN --help
-run_contains "store help" "title" $PANTRY_BIN store --help
-run_contains "search help" "query" $PANTRY_BIN search --help
+run_contains "root help" "store" $UNIAM_BIN --help
+run_contains "store help" "title" $UNIAM_BIN store --help
+run_contains "search help" "query" $UNIAM_BIN search --help
 
 # --- summary ---
 echo ""

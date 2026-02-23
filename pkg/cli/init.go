@@ -5,18 +5,18 @@ import (
 	"os"
 	"path/filepath"
 
-	"pantry/internal/config"
-	"pantry/internal/core"
+	"uniam/internal/config"
+	"uniam/internal/core"
 
 	"github.com/spf13/cobra"
 )
 
 var initCmd = &cobra.Command{
 	Use:   "init",
-	Short: "Initialize the pantry",
+	Short: "Initialize the uniam",
 	//nolint:revive
 	Run: func(cmd *cobra.Command, args []string) {
-		home := config.GetPantryHome()
+		home := config.GetUniamHome()
 
 		shelvesDir := filepath.Join(home, "shelves")
 		if err := os.MkdirAll(shelvesDir, 0755); err != nil {
@@ -39,6 +39,6 @@ var initCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		fmt.Printf("Pantry initialized at %s\n", home)
+		fmt.Printf("Uniam initialized at %s\n", home)
 	},
 }

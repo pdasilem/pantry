@@ -4,14 +4,14 @@ import (
 	"fmt"
 	"os"
 
-	"pantry/internal/core"
+	"uniam/internal/core"
 
 	"github.com/spf13/cobra"
 )
 
 var removeCmd = &cobra.Command{
 	Use:   "remove [id]",
-	Short: "Remove a note from the pantry",
+	Short: "Remove a note from the uniam",
 	Args:  cobra.ExactArgs(1),
 	//nolint:revive
 	Run: func(cmd *cobra.Command, args []string) {

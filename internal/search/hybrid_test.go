@@ -5,7 +5,7 @@ import (
 	"errors"
 	"testing"
 
-	"pantry/internal/models"
+	"uniam/internal/models"
 )
 
 // --- fakeStore implements db.Store for testing ---

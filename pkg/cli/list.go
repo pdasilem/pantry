@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"pantry/internal/core"
+	"uniam/internal/core"
 
 	"github.com/spf13/cobra"
 )
@@ -85,7 +85,7 @@ var listCmd = &cobra.Command{
 			fmt.Printf("- %s [%s] %s%s%s\n", r.ID[:8], dateDisplay, r.Title, cat, tags)
 		}
 
-		fmt.Println("\nUse `pantry search <query>` to search notes, `pantry retrieve <id>` for full details.")
+		fmt.Println("\nUse `uniam search <query>` to search notes, `uniam retrieve <id>` for full details.")
 	},
 }
 
