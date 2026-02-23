@@ -11,6 +11,9 @@ $Arch = if ([Environment]::Is64BitOperatingSystem) { "amd64" } else {
     exit 1
 }
 
+# Ensure TLS 1.2 is used for GitHub downloads (required for older PowerShell 5.1)
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+
 # Get latest release version
 Write-Host "Fetching latest release..."
 $Release = Invoke-RestMethod "https://api.github.com/repos/$Repo/releases/latest"

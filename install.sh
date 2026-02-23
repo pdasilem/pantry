@@ -42,17 +42,18 @@ URL="https://github.com/${REPO}/releases/download/${VERSION}/${FILENAME}"
 
 echo "Downloading uniam ${VERSION} for ${OS}/${ARCH}..."
 TMP="$(mktemp)"
-curl -sSfL "$URL" -o "$TMP"
+curl -fL --progress-bar "$URL" -o "$TMP"
+echo "" # Empty line after progress bar
 chmod +x "$TMP"
 
 # Try to install to /usr/local/bin (system-wide, may need sudo)
 install_system() {
-  if mv "$TMP" "/usr/local/bin/$BINARY" 2>/dev/null; then
+  if mv -f "$TMP" "/usr/local/bin/$BINARY" 2>/dev/null; then
     echo "Installed to /usr/local/bin/$BINARY"
     return 0
   fi
   echo "No write access to /usr/local/bin. Trying with sudo..."
-  if sudo mv "$TMP" "/usr/local/bin/$BINARY"; then
+  if sudo mv -f "$TMP" "/usr/local/bin/$BINARY"; then
     echo "Installed to /usr/local/bin/$BINARY"
     return 0
   fi
@@ -63,7 +64,7 @@ install_system() {
 install_user() {
   LOCAL_BIN="$HOME/.local/bin"
   mkdir -p "$LOCAL_BIN"
-  mv "$TMP" "$LOCAL_BIN/$BINARY"
+  mv -f "$TMP" "$LOCAL_BIN/$BINARY"
   echo "Installed to $LOCAL_BIN/$BINARY"
 
   # Check if ~/.local/bin is in PATH
