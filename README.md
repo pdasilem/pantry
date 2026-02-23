@@ -4,7 +4,7 @@ Local note storage for coding agents. Your agent keeps notes on decisions, bugs,
 
 **License & Credits:**
 
-- This project is released under the MIT License. Anyone may freely copy, distribute, modify, and use this software for both commercial and non-commercial purposes.
+- This project is released under a Non-Commercial License. Anyone may freely copy, distribute, modify, and use this software for non-commercial purposes only. Commercial exploitation (including selling) is explicitly prohibited.
 - Исходный код этого проекта был использован с <https://github.com/mobydeck/pantry>.
 
 ## Features
