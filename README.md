@@ -74,7 +74,7 @@ During setup (except for Windsurf), you will be prompted to install **fast conte
 
 This writes the MCP server entry into your agent's config file. Restart the agent and uniam will be available as a tool.
 
-Run `uniam setup` again at any time to re-apply the config — it is **idempotent** and will not overwrite other entries in your agent's config.
+Run `uniam setup` again at any time to re-apply the config — it is **idempotent** and will not overwrite other entries in your agent's config. This will also update installed agent skill files to their latest version.
 
 Run `uniam doctor` to verify everything is working.
 
@@ -116,7 +116,7 @@ No config changes are needed — the agent always runs whatever `uniam` binary i
 
 ### Tell your agent to use Uniam
 
-MCP registration makes the tools available, but your agent also needs instructions to actually use them. The `setup` command installs a skill file automatically for agents that support it (Claude Code, Cursor, Windsurf, Antigravity, Codex, Codex CLI, Copilot, Gemini CLI). For other agents — or if you prefer to use a project-level rules file — add the following to your `AGENTS.md`, `.rules`, `CLAUDE.md`, or equivalent:
+MCP registration makes the tools available, but your agent also needs instructions to actually use them. The `setup` command installs a skill file automatically for agents that support it (Claude Code, Cursor, Windsurf, Antigravity, Codex, Codex CLI, Copilot, Gemini CLI). For other agents — or if you prefer to use a project-level rules file — add the following to your [AGENTS.md](AGENTS.md), `.rules`, `CLAUDE.md`, or equivalent:
 
 > **Note for VS Code Copilot users**: Copilot does not automatically read global skill files. You must manually copy the instructions from the installed `skills` folder (e.g., `~/.uniam/skills/uniam.md`) directly into your VS Code Copilot Chat Rules settings to ensure proper agent behavior.
 

@@ -16,10 +16,6 @@ func installSkill(agentHome string) bool {
 	skillDir := filepath.Join(agentHome, "skills", "uniam")
 	skillPath := filepath.Join(skillDir, "SKILL.md")
 
-	if _, err := os.Stat(skillPath); err == nil {
-		return false
-	}
-
 	if err := os.MkdirAll(skillDir, 0755); err != nil {
 		return false
 	}
@@ -73,10 +69,6 @@ var fastContextSkillContent []byte
 func installFastContextSkill(agentHome string) bool {
 	skillDir := filepath.Join(agentHome, "skills", "fastcontext")
 	skillPath := filepath.Join(skillDir, "SKILL.md")
-
-	if _, err := os.Stat(skillPath); err == nil {
-		return false
-	}
 
 	if err := os.MkdirAll(skillDir, 0755); err != nil {
 		return false
